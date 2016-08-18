@@ -601,7 +601,7 @@ class HtmlToSpannedConverter implements ContentHandler, LexicalHandler {
             endFont(mSpannableStringBuilder);
         } else if (tag.equalsIgnoreCase("blockquote")) {
             handleP(mSpannableStringBuilder);
-            end(mSpannableStringBuilder, Blockquote.class, new AztecQuoteSpan(0xffe9eff3, 0xff2e4453, 0, 0, 20));
+            end(mSpannableStringBuilder, Blockquote.class, new AztecQuoteSpan(0xffe9eff3, 0xff2e4453, 20, 0, 40));
         } else if (tag.equalsIgnoreCase("tt")) {
             end(mSpannableStringBuilder, Monospace.class,
                     new TypefaceSpan("monospace"));

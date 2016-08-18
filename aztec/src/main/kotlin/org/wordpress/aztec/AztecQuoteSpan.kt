@@ -18,6 +18,7 @@
 package org.wordpress.aztec
 
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.os.Parcel
@@ -27,6 +28,7 @@ import android.text.style.LineBackgroundSpan
 import android.text.style.ParagraphStyle
 import android.text.style.QuoteSpan
 import android.text.style.ReplacementSpan
+import android.util.TypedValue
 
 class AztecQuoteSpan : ReplacementSpan, ParagraphStyle {
 
@@ -39,22 +41,26 @@ class AztecQuoteSpan : ReplacementSpan, ParagraphStyle {
     constructor(quoteBackground: Int, quoteColor: Int, quoteMargin: Int, quoteWidth: Int, quotePadding: Int) {
         this.quoteBackground = quoteBackground
         this.quoteColor = quoteColor
-        this.quoteMargin = 0
+        this.quoteMargin = quoteMargin
         this.quoteWidth = quoteWidth
         this.quotePadding = quotePadding
     }
 
-    override fun getSize(paint: Paint, text: CharSequence, start: Int, end: Int, fm: Paint.FontMetricsInt): Int {
+    override fun getSize(paint: Paint, text: CharSequence, start: Int, end: Int, fm: Paint.FontMetricsInt?): Int {
         return quotePadding + paint.measureText(text.subSequence(start, end).toString()).toInt() + quotePadding
     }
 
     override fun draw(canvas: Canvas, text: CharSequence, start: Int, end: Int, x: Float, top: Int, y: Int, bottom: Int, paint: Paint) {
         val width = paint.measureText(text.subSequence(start, end).toString())
-        val rect = RectF(x - quotePadding, top.toFloat(), x + width + quotePadding, bottom.toFloat())
+        val rect = RectF(x, top.toFloat() - quotePadding, canvas.width.toFloat(), bottom.toFloat() + quotePadding)
         paint.color = quoteBackground
         canvas.drawRoundRect(rect, 10f, 10f, paint)
-        paint.color = quoteColor
-        canvas.drawText(text, start, end, x, y.toFloat(), paint)
+
+        val fm = paint.fontMetrics
+        val h = Math.ceil((fm.descent - fm.ascent).toDouble()).toInt();
+        val i = h - fm.descent
+        paint.color = Color.BLACK
+        canvas.drawText(text, start, end, x + quotePadding, i + rect.top + quotePadding, paint)
     }
 
 //
