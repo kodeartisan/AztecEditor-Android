@@ -19,12 +19,16 @@ package org.wordpress.aztec
 
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.RectF
 import android.os.Parcel
+import android.os.Parcelable
 import android.text.Layout
 import android.text.style.LineBackgroundSpan
+import android.text.style.ParagraphStyle
 import android.text.style.QuoteSpan
+import android.text.style.ReplacementSpan
 
-class AztecQuoteSpan : QuoteSpan, LineBackgroundSpan {
+class AztecQuoteSpan : ReplacementSpan, ParagraphStyle {
 
     private var quoteBackground: Int = 0
     private var quoteColor: Int = 0
@@ -35,54 +39,51 @@ class AztecQuoteSpan : QuoteSpan, LineBackgroundSpan {
     constructor(quoteBackground: Int, quoteColor: Int, quoteMargin: Int, quoteWidth: Int, quotePadding: Int) {
         this.quoteBackground = quoteBackground
         this.quoteColor = quoteColor
-        this.quoteMargin = quoteMargin
+        this.quoteMargin = 0
         this.quoteWidth = quoteWidth
         this.quotePadding = quotePadding
     }
 
-    constructor(src: Parcel) : super(src) {
-        this.quoteBackground = src.readInt()
-        this.quoteColor = src.readInt()
-        this.quoteMargin = src.readInt()
-        this.quoteWidth = src.readInt()
-        this.quotePadding = src.readInt()
+    override fun getSize(paint: Paint, text: CharSequence, start: Int, end: Int, fm: Paint.FontMetricsInt): Int {
+        return quotePadding + paint.measureText(text.subSequence(start, end).toString()).toInt() + quotePadding
     }
 
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        super.writeToParcel(dest, flags)
-        dest.writeInt(quoteBackground)
-        dest.writeInt(quoteColor)
-        dest.writeInt(quoteMargin)
-        dest.writeInt(quoteWidth)
-        dest.writeInt(quotePadding)
+    override fun draw(canvas: Canvas, text: CharSequence, start: Int, end: Int, x: Float, top: Int, y: Int, bottom: Int, paint: Paint) {
+        val width = paint.measureText(text.subSequence(start, end).toString())
+        val rect = RectF(x - quotePadding, top.toFloat(), x + width + quotePadding, bottom.toFloat())
+        paint.color = quoteBackground
+        canvas.drawRoundRect(rect, 10f, 10f, paint)
+        paint.color = quoteColor
+        canvas.drawText(text, start, end, x, y.toFloat(), paint)
     }
 
-    override fun getLeadingMargin(first: Boolean): Int {
-        return quoteMargin + quoteWidth + quotePadding
-    }
-
-    override fun drawLeadingMargin(c: Canvas, p: Paint, x: Int, dir: Int,
-                                   top: Int, baseline: Int, bottom: Int,
-                                   text: CharSequence, start: Int, end: Int,
-                                   first: Boolean, layout: Layout) {
-        val style = p.style
-        val color = p.color
-
-        p.style = Paint.Style.FILL
-        p.color = quoteColor
-        c.drawRect(x.toFloat() + quoteMargin, top.toFloat(), (x + quoteMargin + dir * quoteWidth).toFloat(), bottom.toFloat(), p)
-
-        p.style = style
-        p.color = color
-    }
-
-    override fun drawBackground(c: Canvas, p: Paint, left: Int, right: Int,
-                                top: Int, baseline: Int, bottom: Int,
-                                text: CharSequence?, start: Int, end: Int,
-                                lnum: Int) {
-        val paintColor = p.color
-        p.color = quoteBackground
-        c.drawRect(left.toFloat() + quoteMargin, top.toFloat(), right.toFloat(), bottom.toFloat(), p)
-        p.color = paintColor
-    }
+//
+//    override fun getLeadingMargin(first: Boolean): Int {
+//        return quoteMargin + quoteWidth + quotePadding
+//    }
+//
+//    override fun drawLeadingMargin(c: Canvas, p: Paint, x: Int, dir: Int,
+//                                   top: Int, baseline: Int, bottom: Int,
+//                                   text: CharSequence, start: Int, end: Int,
+//                                   first: Boolean, layout: Layout) {
+//        val style = p.style
+//        val color = p.color
+//
+//        p.style = Paint.Style.FILL
+//        p.color = quoteColor
+//        c.drawRect(x.toFloat() + quoteMargin, top.toFloat(), (x + quoteMargin + dir * quoteWidth).toFloat(), bottom.toFloat(), p)
+//
+//        p.style = style
+//        p.color = color
+//    }
+//
+//    override fun drawBackground(c: Canvas, p: Paint, left: Int, right: Int,
+//                                top: Int, baseline: Int, bottom: Int,
+//                                text: CharSequence?, start: Int, end: Int,
+//                                lnum: Int) {
+//        val paintColor = p.color
+//        p.color = quoteBackground
+//        c.drawRect(left.toFloat() + quoteMargin, top.toFloat(), right.toFloat(), bottom.toFloat(), p)
+//        p.color = paintColor
+//    }
 }

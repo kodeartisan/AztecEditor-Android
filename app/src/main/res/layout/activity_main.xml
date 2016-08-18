@@ -29,25 +29,7 @@
             android:paddingRight="16dp"
             android:paddingStart="16dp"
             android:paddingTop="16dp"
-            android:scrollbars="vertical"
-            aztec:backgroundColor="@android:color/transparent"
-            aztec:bulletColor="@color/blue_500"
-            aztec:bulletMargin="@dimen/bullet_margin"
-            aztec:bulletPadding="@dimen/bullet_padding"
-            aztec:bulletWidth="@dimen/bullet_width"
-            aztec:historyEnable="true"
-            aztec:historySize="10"
-            aztec:lineSpacingExtra="@dimen/spacing_extra"
-            aztec:lineSpacingMultiplier="@dimen/spacing_multiplier"
-            aztec:linkColor="@color/blue_700"
-            aztec:linkUnderline="false"
-            aztec:quoteBackground="@color/blue_700"
-            aztec:quoteColor="@color/blue_500"
-            aztec:quoteMargin="@dimen/quote_margin"
-            aztec:quotePadding="@dimen/quote_padding"
-            aztec:quoteWidth="@dimen/quote_width"
-            aztec:textColor="@android:color/white"
-            aztec:textColorHint="@android:color/darker_gray" >
+            android:scrollbars="vertical">
         </org.wordpress.aztec.AztecText>
 
     </ScrollView>

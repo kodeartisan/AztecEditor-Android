@@ -781,7 +781,7 @@ class AztecText : EditText, TextWatcher {
             }
 
             if (quoteStart < quoteEnd) {
-                val spans = editableText.getSpans(quoteStart, quoteEnd, QuoteSpan::class.java)
+                val spans = editableText.getSpans(quoteStart, quoteEnd, AztecQuoteSpan::class.java)
                 for (span in spans) {
                     editableText.removeSpan(span)
                 }
@@ -838,7 +838,7 @@ class AztecText : EditText, TextWatcher {
             return false
         }
 
-        val spans = editableText.getSpans(start, end, QuoteSpan::class.java)
+        val spans = editableText.getSpans(start, end, AztecQuoteSpan::class.java)
         return spans.size > 0
     }
 
@@ -1229,7 +1229,7 @@ class AztecText : EditText, TextWatcher {
             editable.setSpan(AztecBulletSpan(bulletColor, bulletMargin, bulletWidth, bulletPadding), spanStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
 
-        val quoteSpans = editable.getSpans(start, end, QuoteSpan::class.java)
+        val quoteSpans = editable.getSpans(start, end, AztecQuoteSpan::class.java)
         for (span in quoteSpans) {
             val spanStart = editable.getSpanStart(span)
             var spanEnd = editable.getSpanEnd(span)

@@ -210,16 +210,16 @@ public class Html {
                                   int start, int end) {
         int next;
         for (int i = start; i < end; i = next) {
-            next = text.nextSpanTransition(i, end, QuoteSpan.class);
-            QuoteSpan[] quotes = text.getSpans(i, next, QuoteSpan.class);
+            next = text.nextSpanTransition(i, end, AztecQuoteSpan.class);
+            AztecQuoteSpan[] quotes = text.getSpans(i, next, AztecQuoteSpan.class);
 
-            for (QuoteSpan quote : quotes) {
+            for (AztecQuoteSpan quote : quotes) {
                 out.append("<blockquote>");
             }
 
             withinBlockquote(out, text, i, next);
 
-            for (QuoteSpan quote : quotes) {
+            for (AztecQuoteSpan quote : quotes) {
                 out.append("</blockquote>\n");
             }
         }
@@ -601,7 +601,7 @@ class HtmlToSpannedConverter implements ContentHandler, LexicalHandler {
             endFont(mSpannableStringBuilder);
         } else if (tag.equalsIgnoreCase("blockquote")) {
             handleP(mSpannableStringBuilder);
-            end(mSpannableStringBuilder, Blockquote.class, new QuoteSpan());
+            end(mSpannableStringBuilder, Blockquote.class, new AztecQuoteSpan(0xffe9eff3, 0xff2e4453, 0, 0, 20));
         } else if (tag.equalsIgnoreCase("tt")) {
             end(mSpannableStringBuilder, Monospace.class,
                     new TypefaceSpan("monospace"));

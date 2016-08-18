@@ -63,9 +63,9 @@ class AztecParser {
 
             val styles = text.getSpans(i, next, ParagraphStyle::class.java)
             if (styles.size == 2) {
-                if (styles[0] is BulletSpan && styles[1] is QuoteSpan) {
+                if (styles[0] is BulletSpan && styles[1] is AztecQuoteSpan) {
                     withinQuoteThenBullet(out, text, i, next++)
-                } else if (styles[0] is QuoteSpan && styles[1] is BulletSpan) {
+                } else if (styles[0] is AztecQuoteSpan && styles[1] is BulletSpan) {
                     withinBulletThenQuote(out, text, i, next++)
                 } else {
                     withinContent(out, text, i, next)
@@ -73,7 +73,7 @@ class AztecParser {
             } else if (styles.size == 1) {
                 if (styles[0] is BulletSpan) {
                     withinBullet(out, text, i, next)
-                } else if (styles[0] is QuoteSpan) {
+                } else if (styles[0] is AztecQuoteSpan) {
                     withinQuote(out, text, i, next++)
                 } else if (styles[0] is UnknownHtmlSpan) {
                     withinUnknown(styles[0] as UnknownHtmlSpan, out)
@@ -135,9 +135,9 @@ class AztecParser {
 
         var i = start
         while (i < end) {
-            next = text.nextSpanTransition(i, end, QuoteSpan::class.java)
+            next = text.nextSpanTransition(i, end, AztecQuoteSpan::class.java)
 
-            val quotes = text.getSpans(i, next, QuoteSpan::class.java)
+            val quotes = text.getSpans(i, next, AztecQuoteSpan::class.java)
             for (quote in quotes) {
                 out.append("<blockquote>")
             }
