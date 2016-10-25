@@ -14,7 +14,7 @@ import android.widget.*
 import android.widget.PopupMenu.OnMenuItemClickListener
 import org.wordpress.aztec.AztecText
 import org.wordpress.aztec.R
-import org.wordpress.aztec.TextFormat
+import org.wordpress.aztec.ElementType
 import org.wordpress.aztec.source.SourceViewEditText
 import org.wordpress.aztec.spans.AztecCommentSpan
 import java.util.*
@@ -84,31 +84,31 @@ class AztecToolbar : FrameLayout, OnMenuItemClickListener {
 
         when (item?.itemId) {
             R.id.paragraph -> {
-                editor?.toggleFormatting(TextFormat.FORMAT_PARAGRAPH)
+                editor?.toggleFormatting(ElementType.FORMAT_PARAGRAPH)
                 return true
             }
             R.id.heading_1 -> {
-                editor?.toggleFormatting(TextFormat.FORMAT_HEADING_1)
+                editor?.toggleFormatting(ElementType.FORMAT_HEADING_1)
                 return true
             }
             R.id.heading_2 -> {
-                editor?.toggleFormatting(TextFormat.FORMAT_HEADING_2)
+                editor?.toggleFormatting(ElementType.FORMAT_HEADING_2)
                 return true
             }
             R.id.heading_3 -> {
-                editor?.toggleFormatting(TextFormat.FORMAT_HEADING_3)
+                editor?.toggleFormatting(ElementType.FORMAT_HEADING_3)
                 return true
             }
             R.id.heading_4 -> {
-                editor?.toggleFormatting(TextFormat.FORMAT_HEADING_4)
+                editor?.toggleFormatting(ElementType.FORMAT_HEADING_4)
                 return true
             }
             R.id.heading_5 -> {
-                editor?.toggleFormatting(TextFormat.FORMAT_HEADING_5)
+                editor?.toggleFormatting(ElementType.FORMAT_HEADING_5)
                 return true
             }
             R.id.heading_6 -> {
-                editor?.toggleFormatting(TextFormat.FORMAT_HEADING_6)
+                editor?.toggleFormatting(ElementType.FORMAT_HEADING_6)
                 return true
             }
             else -> return false
@@ -193,7 +193,7 @@ class AztecToolbar : FrameLayout, OnMenuItemClickListener {
         //if nothing is selected just mark the style as active
         if (!editor!!.isTextSelected() && action.actionType == ToolbarActionType.INLINE_STYLE) {
             val actions = getSelectedActions()
-            val textFormats = ArrayList<TextFormat>()
+            val textFormats = ArrayList<ElementType>()
 
             actions.forEach { if (it.isStylingAction()) textFormats.add(it.textFormat!!) }
             return editor!!.setSelectedStyles(textFormats)
@@ -234,14 +234,14 @@ class AztecToolbar : FrameLayout, OnMenuItemClickListener {
 
     }
 
-    private fun selectHeaderMenu(textFormat: TextFormat?) {
+    private fun selectHeaderMenu(textFormat: ElementType?) {
         when (textFormat) {
-            TextFormat.FORMAT_HEADING_1 -> headingMenu?.menu?.getItem(1)?.isChecked = true
-            TextFormat.FORMAT_HEADING_2 -> headingMenu?.menu?.getItem(2)?.isChecked = true
-            TextFormat.FORMAT_HEADING_3 -> headingMenu?.menu?.getItem(3)?.isChecked = true
-            TextFormat.FORMAT_HEADING_4 -> headingMenu?.menu?.getItem(4)?.isChecked = true
-            TextFormat.FORMAT_HEADING_5 -> headingMenu?.menu?.getItem(5)?.isChecked = true
-            TextFormat.FORMAT_HEADING_6 -> headingMenu?.menu?.getItem(6)?.isChecked = true
+            ElementType.FORMAT_HEADING_1 -> headingMenu?.menu?.getItem(1)?.isChecked = true
+            ElementType.FORMAT_HEADING_2 -> headingMenu?.menu?.getItem(2)?.isChecked = true
+            ElementType.FORMAT_HEADING_3 -> headingMenu?.menu?.getItem(3)?.isChecked = true
+            ElementType.FORMAT_HEADING_4 -> headingMenu?.menu?.getItem(4)?.isChecked = true
+            ElementType.FORMAT_HEADING_5 -> headingMenu?.menu?.getItem(5)?.isChecked = true
+            ElementType.FORMAT_HEADING_6 -> headingMenu?.menu?.getItem(6)?.isChecked = true
             else -> headingMenu?.menu?.getItem(0)?.isChecked = true
         }
     }

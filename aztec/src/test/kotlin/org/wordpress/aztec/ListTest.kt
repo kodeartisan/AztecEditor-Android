@@ -18,7 +18,7 @@ import org.robolectric.annotation.Config
  */
 @RunWith(ParameterizedRobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, manifest = "src/main/AndroidManifest.xml", sdk = intArrayOf(16))
-class ListTest(listTextFormat: TextFormat, listHtmlTag: String) {
+class ListTest(listTextFormat: ElementType, listHtmlTag: String) {
 
     val listType = listTextFormat
     val listTag = listHtmlTag
@@ -29,8 +29,8 @@ class ListTest(listTextFormat: TextFormat, listHtmlTag: String) {
         @ParameterizedRobolectricTestRunner.Parameters(name = "Testing lists with {1} tag")
         fun data(): Collection<Array<Any>> {
             return listOf(
-                    arrayOf(TextFormat.FORMAT_ORDERED_LIST, "ol"),
-                    arrayOf(TextFormat.FORMAT_UNORDERED_LIST, "ul")
+                    arrayOf(ElementType.FORMAT_ORDERED_LIST, "ol"),
+                    arrayOf(ElementType.FORMAT_UNORDERED_LIST, "ul")
             )
         }
     }
@@ -381,8 +381,8 @@ class ListTest(listTextFormat: TextFormat, listHtmlTag: String) {
     @Throws(Exception::class)
     fun toggleListType() {
 
-        val oppositeTextFormat = if (listType == TextFormat.FORMAT_ORDERED_LIST)
-            TextFormat.FORMAT_UNORDERED_LIST else TextFormat.FORMAT_ORDERED_LIST
+        val oppositeTextFormat = if (listType == ElementType.FORMAT_ORDERED_LIST)
+            ElementType.FORMAT_UNORDERED_LIST else ElementType.FORMAT_ORDERED_LIST
 
         val oppositeTag = if (listTag.equals("ol")) "ul" else "ol"
 

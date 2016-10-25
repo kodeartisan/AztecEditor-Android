@@ -18,7 +18,7 @@ import org.robolectric.annotation.Config
 @Config(constants = BuildConfig::class)
 class QuoteTest() {
 
-    val formattingType = TextFormat.FORMAT_QUOTE
+    val formattingType = ElementType.FORMAT_QUOTE
     val quoteTag = "blockquote"
     lateinit var editText: AztecText
 

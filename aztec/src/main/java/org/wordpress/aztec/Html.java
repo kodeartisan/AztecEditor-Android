@@ -579,36 +579,36 @@ class HtmlToSpannedConverter implements ContentHandler, LexicalHandler {
         if (tag.equalsIgnoreCase("br")) {
             handleBr(mSpannableStringBuilder);
         } else if (tag.equalsIgnoreCase("strong")) {
-            end(mSpannableStringBuilder, TextFormat.FORMAT_BOLD);
+            end(mSpannableStringBuilder, ElementType.FORMAT_BOLD);
         } else if (tag.equalsIgnoreCase("b")) {
-            end(mSpannableStringBuilder, TextFormat.FORMAT_BOLD);
+            end(mSpannableStringBuilder, ElementType.FORMAT_BOLD);
         } else if (tag.equalsIgnoreCase("em")) {
-            end(mSpannableStringBuilder, TextFormat.FORMAT_ITALIC);
+            end(mSpannableStringBuilder, ElementType.FORMAT_ITALIC);
         } else if (tag.equalsIgnoreCase("cite")) {
-            end(mSpannableStringBuilder, TextFormat.FORMAT_ITALIC);
+            end(mSpannableStringBuilder, ElementType.FORMAT_ITALIC);
         } else if (tag.equalsIgnoreCase("dfn")) {
-            end(mSpannableStringBuilder, TextFormat.FORMAT_ITALIC);
+            end(mSpannableStringBuilder, ElementType.FORMAT_ITALIC);
         } else if (tag.equalsIgnoreCase("i")) {
-            end(mSpannableStringBuilder, TextFormat.FORMAT_ITALIC);
+            end(mSpannableStringBuilder, ElementType.FORMAT_ITALIC);
         } else if (tag.equalsIgnoreCase("big")) {
-            end(mSpannableStringBuilder, TextFormat.FORMAT_BIG);
+            end(mSpannableStringBuilder, ElementType.FORMAT_BIG);
         } else if (tag.equalsIgnoreCase("small")) {
-            end(mSpannableStringBuilder, TextFormat.FORMAT_SMALL);
+            end(mSpannableStringBuilder, ElementType.FORMAT_SMALL);
         } else if (tag.equalsIgnoreCase("font")) {
             endFont(mSpannableStringBuilder);
         } else if (tag.equalsIgnoreCase("tt")) {
-            end(mSpannableStringBuilder, TextFormat.FORMAT_MONOSPACE);
+            end(mSpannableStringBuilder, ElementType.FORMAT_MONOSPACE);
         } else if (tag.equalsIgnoreCase("a")) {
-            end(mSpannableStringBuilder, TextFormat.FORMAT_LINK);
+            end(mSpannableStringBuilder, ElementType.FORMAT_LINK);
         } else if (tag.equalsIgnoreCase("u")) {
-            end(mSpannableStringBuilder, TextFormat.FORMAT_UNDERLINED);
+            end(mSpannableStringBuilder, ElementType.FORMAT_UNDERLINED);
         } else if (tag.equalsIgnoreCase("sup")) {
-            end(mSpannableStringBuilder, TextFormat.FORMAT_SUPERSCRIPT);
+            end(mSpannableStringBuilder, ElementType.FORMAT_SUPERSCRIPT);
         } else if (tag.equalsIgnoreCase("sub")) {
-            end(mSpannableStringBuilder, TextFormat.FORMAT_SUBSCRIPT);
+            end(mSpannableStringBuilder, ElementType.FORMAT_SUBSCRIPT);
         } else if (tag.equalsIgnoreCase("p")) {
             handleP(mSpannableStringBuilder);
-            end(mSpannableStringBuilder, TextFormat.FORMAT_PARAGRAPH);
+            end(mSpannableStringBuilder, ElementType.FORMAT_PARAGRAPH);
         } else if (tag.length() == 2 &&
                 Character.toLowerCase(tag.charAt(0)) == 'h' &&
                 tag.charAt(1) >= '1' && tag.charAt(1) <= '6') {
@@ -658,7 +658,7 @@ class HtmlToSpannedConverter implements ContentHandler, LexicalHandler {
         text.setSpan(mark, len, len, Spannable.SPAN_MARK_MARK);
     }
 
-    private static void end(SpannableStringBuilder text, TextFormat textFormat) {
+    private static void end(SpannableStringBuilder text, ElementType textFormat) {
         int len = text.length();
         AttributedMarker marker;
         AztecContentSpan newSpan = null;
@@ -769,7 +769,7 @@ class HtmlToSpannedConverter implements ContentHandler, LexicalHandler {
         Font font = (Font) getLast(text, Font.class);
         int where = text.getSpanStart(font);
 
-        end(text, TextFormat.FORMAT_FONT);
+        end(text, ElementType.FORMAT_FONT);
 
         if (font != null && where != len) {
 

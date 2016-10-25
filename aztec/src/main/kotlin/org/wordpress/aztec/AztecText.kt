@@ -62,7 +62,7 @@ class AztecText : EditText, TextWatcher {
 
     private var onSelectionChangedListener: OnSelectionChangedListener? = null
 
-    private val selectedStyles = ArrayList<TextFormat>()
+    private val selectedStyles = ArrayList<ElementType>()
 
     private var isNewStyleSelected = false
 
@@ -178,7 +178,7 @@ class AztecText : EditText, TextWatcher {
         }
     }
 
-    fun setSelectedStyles(styles: ArrayList<TextFormat>) {
+    fun setSelectedStyles(styles: ArrayList<ElementType>) {
         isNewStyleSelected = true
         selectedStyles?.clear()
         selectedStyles?.addAll(styles)
@@ -200,33 +200,33 @@ class AztecText : EditText, TextWatcher {
 
     private fun bold(valid: Boolean) {
         if (valid) {
-            applyInlineStyle(TextFormat.FORMAT_BOLD, selectionStart, selectionEnd)
+            applyInlineStyle(ElementType.FORMAT_BOLD, selectionStart, selectionEnd)
         } else {
-            removeInlineStyle(TextFormat.FORMAT_BOLD, selectionStart, selectionEnd)
+            removeInlineStyle(ElementType.FORMAT_BOLD, selectionStart, selectionEnd)
         }
     }
 
     private fun italic(valid: Boolean) {
         if (valid) {
-            applyInlineStyle(TextFormat.FORMAT_ITALIC, selectionStart, selectionEnd)
+            applyInlineStyle(ElementType.FORMAT_ITALIC, selectionStart, selectionEnd)
         } else {
-            removeInlineStyle(TextFormat.FORMAT_ITALIC, selectionStart, selectionEnd)
+            removeInlineStyle(ElementType.FORMAT_ITALIC, selectionStart, selectionEnd)
         }
     }
 
     fun underline(valid: Boolean) {
         if (valid) {
-            applyInlineStyle(TextFormat.FORMAT_UNDERLINED, selectionStart, selectionEnd)
+            applyInlineStyle(ElementType.FORMAT_UNDERLINED, selectionStart, selectionEnd)
         } else {
-            removeInlineStyle(TextFormat.FORMAT_UNDERLINED, selectionEnd, selectionEnd)
+            removeInlineStyle(ElementType.FORMAT_UNDERLINED, selectionEnd, selectionEnd)
         }
     }
 
     fun strikethrough(valid: Boolean) {
         if (valid) {
-            applyInlineStyle(TextFormat.FORMAT_STRIKETHROUGH, selectionStart, selectionEnd)
+            applyInlineStyle(ElementType.FORMAT_STRIKETHROUGH, selectionStart, selectionEnd)
         } else {
-            removeInlineStyle(TextFormat.FORMAT_STRIKETHROUGH, selectionStart, selectionEnd)
+            removeInlineStyle(ElementType.FORMAT_STRIKETHROUGH, selectionStart, selectionEnd)
         }
     }
 
@@ -327,7 +327,7 @@ class AztecText : EditText, TextWatcher {
         }
     }
 
-    private fun applyInlineStyle(textFormat: TextFormat, start: Int, end: Int) {
+    private fun applyInlineStyle(textFormat: ElementType, start: Int, end: Int) {
 
         val spanToApply = makeInlineSpan(textFormat)
 
@@ -393,7 +393,7 @@ class AztecText : EditText, TextWatcher {
         joinStyleSpans(start, end)
     }
 
-    fun removeInlineStyle(textFormat: TextFormat, start: Int, end: Int) {
+    fun removeInlineStyle(textFormat: ElementType, start: Int, end: Int) {
         //for convenience sake we are initializing the span of same type we are planing to remove
         val spanToRemove = makeInlineSpan(textFormat)
 
@@ -427,11 +427,11 @@ class AztecText : EditText, TextWatcher {
     }
 
     //TODO: Come up with a better way to init spans and get their classes (all the "make" methods)
-    fun makeBlockSpan(textFormat: TextFormat, attrs: String? = null): AztecBlockSpan {
+    fun makeBlockSpan(textFormat: ElementType, attrs: String? = null): AztecBlockSpan {
         when (textFormat) {
-            TextFormat.FORMAT_ORDERED_LIST -> return AztecOrderedListSpan(bulletColor, bulletMargin, bulletWidth, bulletPadding, attrs)
-            TextFormat.FORMAT_UNORDERED_LIST -> return AztecUnorderedListSpan(bulletColor, bulletMargin, bulletWidth, bulletPadding, attrs)
-            TextFormat.FORMAT_QUOTE -> return AztecQuoteSpan(quoteBackground, quoteColor, quoteMargin, quoteWidth, quotePadding, attrs)
+            ElementType.FORMAT_ORDERED_LIST -> return AztecOrderedListSpan(bulletColor, bulletMargin, bulletWidth, bulletPadding, attrs)
+            ElementType.FORMAT_UNORDERED_LIST -> return AztecUnorderedListSpan(bulletColor, bulletMargin, bulletWidth, bulletPadding, attrs)
+            ElementType.FORMAT_QUOTE -> return AztecQuoteSpan(quoteBackground, quoteColor, quoteMargin, quoteWidth, quotePadding, attrs)
             else -> return AztecOrderedListSpan(bulletColor, bulletMargin, bulletWidth, bulletPadding)
         }
     }
@@ -446,17 +446,17 @@ class AztecText : EditText, TextWatcher {
         }
     }
 
-    fun makeInlineSpan(textFormat: TextFormat): CharacterStyle {
+    fun makeInlineSpan(textFormat: ElementType): CharacterStyle {
         when (textFormat) {
-            TextFormat.FORMAT_BOLD -> return AztecStyleSpan(Typeface.BOLD)
-            TextFormat.FORMAT_ITALIC -> return AztecStyleSpan(Typeface.ITALIC)
-            TextFormat.FORMAT_STRIKETHROUGH -> return AztecStrikethroughSpan()
-            TextFormat.FORMAT_UNDERLINED -> return AztecUnderlineSpan()
+            ElementType.FORMAT_BOLD -> return AztecStyleSpan(Typeface.BOLD)
+            ElementType.FORMAT_ITALIC -> return AztecStyleSpan(Typeface.ITALIC)
+            ElementType.FORMAT_STRIKETHROUGH -> return AztecStrikethroughSpan()
+            ElementType.FORMAT_UNDERLINED -> return AztecUnderlineSpan()
             else -> return AztecStyleSpan(Typeface.NORMAL)
         }
     }
 
-    fun containsInlineStyle(textFormat: TextFormat, start: Int, end: Int): Boolean {
+    fun containsInlineStyle(textFormat: ElementType, start: Int, end: Int): Boolean {
         val spanToCheck = makeInlineSpan(textFormat)
 
         if (start > end) {
@@ -494,7 +494,7 @@ class AztecText : EditText, TextWatcher {
 
     // HeadingSpan =================================================================================
 
-    fun heading(format: Boolean, textFormat: TextFormat) {
+    fun heading(format: Boolean, textFormat: ElementType) {
         headingClear()
 
         if (format) {
@@ -545,7 +545,7 @@ class AztecText : EditText, TextWatcher {
         refreshText()
     }
 
-    private fun headingFormat(textFormat: TextFormat) {
+    private fun headingFormat(textFormat: ElementType) {
         val lines = TextUtils.split(editableText.toString(), "\n")
 
         for (i in lines.indices) {
@@ -574,17 +574,17 @@ class AztecText : EditText, TextWatcher {
 
             if (headingStart < headingEnd) {
                 when (textFormat) {
-                    TextFormat.FORMAT_HEADING_1 ->
+                    ElementType.FORMAT_HEADING_1 ->
                         editableText.setSpan(AztecHeadingSpan(Heading.H1), headingStart, headingEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    TextFormat.FORMAT_HEADING_2 ->
+                    ElementType.FORMAT_HEADING_2 ->
                         editableText.setSpan(AztecHeadingSpan(Heading.H2), headingStart, headingEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    TextFormat.FORMAT_HEADING_3 ->
+                    ElementType.FORMAT_HEADING_3 ->
                         editableText.setSpan(AztecHeadingSpan(Heading.H3), headingStart, headingEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    TextFormat.FORMAT_HEADING_4 ->
+                    ElementType.FORMAT_HEADING_4 ->
                         editableText.setSpan(AztecHeadingSpan(Heading.H4), headingStart, headingEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    TextFormat.FORMAT_HEADING_5 ->
+                    ElementType.FORMAT_HEADING_5 ->
                         editableText.setSpan(AztecHeadingSpan(Heading.H5), headingStart, headingEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    TextFormat.FORMAT_HEADING_6 ->
+                    ElementType.FORMAT_HEADING_6 ->
                         editableText.setSpan(AztecHeadingSpan(Heading.H6), headingStart, headingEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                     else -> {
                     }
@@ -595,7 +595,7 @@ class AztecText : EditText, TextWatcher {
         refreshText()
     }
 
-    private fun containHeading(textFormat: TextFormat, selStart: Int, selEnd: Int): Boolean {
+    private fun containHeading(textFormat: ElementType, selStart: Int, selEnd: Int): Boolean {
         val lines = TextUtils.split(editableText.toString(), "\n")
         val list = ArrayList<Int>()
 
@@ -651,7 +651,7 @@ class AztecText : EditText, TextWatcher {
         return spans.size > 0
     }
 
-    private fun containHeadingType(textFormat: TextFormat, index: Int): Boolean {
+    private fun containHeadingType(textFormat: ElementType, index: Int): Boolean {
         val lines = TextUtils.split(editableText.toString(), "\n")
 
         if (index < 0 || index >= lines.size) {
@@ -674,17 +674,17 @@ class AztecText : EditText, TextWatcher {
 
         for (span in spans) {
             when (textFormat) {
-                TextFormat.FORMAT_HEADING_1 ->
+                ElementType.FORMAT_HEADING_1 ->
                     return span.heading.equals(AztecHeadingSpan.Heading.H1)
-                TextFormat.FORMAT_HEADING_2 ->
+                ElementType.FORMAT_HEADING_2 ->
                     return span.heading.equals(AztecHeadingSpan.Heading.H2)
-                TextFormat.FORMAT_HEADING_3 ->
+                ElementType.FORMAT_HEADING_3 ->
                     return span.heading.equals(AztecHeadingSpan.Heading.H3)
-                TextFormat.FORMAT_HEADING_4 ->
+                ElementType.FORMAT_HEADING_4 ->
                     return span.heading.equals(AztecHeadingSpan.Heading.H4)
-                TextFormat.FORMAT_HEADING_5 ->
+                ElementType.FORMAT_HEADING_5 ->
                     return span.heading.equals(AztecHeadingSpan.Heading.H5)
-                TextFormat.FORMAT_HEADING_6 ->
+                ElementType.FORMAT_HEADING_6 ->
                     return span.heading.equals(AztecHeadingSpan.Heading.H6)
                 else -> return false
             }
@@ -697,29 +697,29 @@ class AztecText : EditText, TextWatcher {
 
     fun orderedListValid(valid: Boolean) {
         if (valid) {
-            if (containsList(TextFormat.FORMAT_UNORDERED_LIST, selectionStart, selectionEnd)) {
-                switchListType(TextFormat.FORMAT_ORDERED_LIST)
+            if (containsList(ElementType.FORMAT_UNORDERED_LIST, selectionStart, selectionEnd)) {
+                switchListType(ElementType.FORMAT_ORDERED_LIST)
             } else {
-                applyBlockStyle(TextFormat.FORMAT_ORDERED_LIST)
+                applyBlockStyle(ElementType.FORMAT_ORDERED_LIST)
             }
         } else {
-            removeBlockStyle(TextFormat.FORMAT_ORDERED_LIST)
+            removeBlockStyle(ElementType.FORMAT_ORDERED_LIST)
         }
     }
 
     fun unorderedListValid(valid: Boolean) {
         if (valid) {
-            if (containsList(TextFormat.FORMAT_ORDERED_LIST, selectionStart, selectionEnd)) {
-                switchListType(TextFormat.FORMAT_UNORDERED_LIST)
+            if (containsList(ElementType.FORMAT_ORDERED_LIST, selectionStart, selectionEnd)) {
+                switchListType(ElementType.FORMAT_UNORDERED_LIST)
             } else {
-                applyBlockStyle(TextFormat.FORMAT_UNORDERED_LIST)
+                applyBlockStyle(ElementType.FORMAT_UNORDERED_LIST)
             }
         } else {
-            removeBlockStyle(TextFormat.FORMAT_UNORDERED_LIST)
+            removeBlockStyle(ElementType.FORMAT_UNORDERED_LIST)
         }
     }
 
-    private fun switchListType(listTypeToSwitchTo: TextFormat, start: Int = selectionStart, end: Int = selectionEnd) {
+    private fun switchListType(listTypeToSwitchTo: ElementType, start: Int = selectionStart, end: Int = selectionEnd) {
         val spans = editableText.getSpans(start, end, AztecListSpan::class.java)
 
         if (spans.isEmpty()) return
@@ -735,7 +735,7 @@ class AztecText : EditText, TextWatcher {
         onSelectionChanged(start, end)
     }
 
-    private fun applyBlockStyle(blockElementType: TextFormat, start: Int = selectionStart, end: Int = selectionEnd) {
+    private fun applyBlockStyle(blockElementType: ElementType, start: Int = selectionStart, end: Int = selectionEnd) {
         if (start != end) {
             val selectedText = editableText.substring(start + 1..end - 1)
 
@@ -812,7 +812,7 @@ class AztecText : EditText, TextWatcher {
         }
     }
 
-    private fun removeBlockStyle(textFormat: TextFormat) {
+    private fun removeBlockStyle(textFormat: ElementType) {
         removeBlockStyle(selectionStart, selectionEnd, makeBlockSpan(textFormat).javaClass)
     }
 
@@ -857,7 +857,7 @@ class AztecText : EditText, TextWatcher {
 
     }
 
-    private fun containsList(textFormat: TextFormat, selStart: Int, selEnd: Int): Boolean {
+    private fun containsList(textFormat: ElementType, selStart: Int, selEnd: Int): Boolean {
         val lines = TextUtils.split(editableText.toString(), "\n")
         val list = ArrayList<Int>()
 
@@ -891,7 +891,7 @@ class AztecText : EditText, TextWatcher {
         return true
     }
 
-    private fun containsList(textFormat: TextFormat, index: Int, text: Editable = editableText): Boolean {
+    private fun containsList(textFormat: ElementType, index: Int, text: Editable = editableText): Boolean {
         val lines = TextUtils.split(text.toString(), "\n")
         if (index < 0 || index >= lines.size) {
             return false
@@ -915,9 +915,9 @@ class AztecText : EditText, TextWatcher {
 
     fun quote(valid: Boolean) {
         if (valid) {
-            applyBlockStyle(TextFormat.FORMAT_QUOTE)
+            applyBlockStyle(ElementType.FORMAT_QUOTE)
         } else {
-            removeBlockStyle(TextFormat.FORMAT_QUOTE)
+            removeBlockStyle(ElementType.FORMAT_QUOTE)
         }
     }
 
@@ -1199,27 +1199,27 @@ class AztecText : EditText, TextWatcher {
         setSelection(commentEndIndex + 1)
     }
 
-    fun getAppliedHeading(selectionStart: Int, selectionEnd: Int): TextFormat? {
-        if (contains(TextFormat.FORMAT_HEADING_1, selectionStart, selectionEnd)) {
-            return TextFormat.FORMAT_HEADING_1
-        } else if (contains(TextFormat.FORMAT_HEADING_2, selectionStart, selectionEnd)) {
-            return TextFormat.FORMAT_HEADING_2
-        } else if (contains(TextFormat.FORMAT_HEADING_3, selectionStart, selectionEnd)) {
-            return TextFormat.FORMAT_HEADING_3
-        } else if (contains(TextFormat.FORMAT_HEADING_4, selectionStart, selectionEnd)) {
-            return TextFormat.FORMAT_HEADING_4
-        } else if (contains(TextFormat.FORMAT_HEADING_5, selectionStart, selectionEnd)) {
-            return TextFormat.FORMAT_HEADING_5
-        } else if (contains(TextFormat.FORMAT_HEADING_6, selectionStart, selectionEnd)) {
-            return TextFormat.FORMAT_HEADING_6
+    fun getAppliedHeading(selectionStart: Int, selectionEnd: Int): ElementType? {
+        if (contains(ElementType.FORMAT_HEADING_1, selectionStart, selectionEnd)) {
+            return ElementType.FORMAT_HEADING_1
+        } else if (contains(ElementType.FORMAT_HEADING_2, selectionStart, selectionEnd)) {
+            return ElementType.FORMAT_HEADING_2
+        } else if (contains(ElementType.FORMAT_HEADING_3, selectionStart, selectionEnd)) {
+            return ElementType.FORMAT_HEADING_3
+        } else if (contains(ElementType.FORMAT_HEADING_4, selectionStart, selectionEnd)) {
+            return ElementType.FORMAT_HEADING_4
+        } else if (contains(ElementType.FORMAT_HEADING_5, selectionStart, selectionEnd)) {
+            return ElementType.FORMAT_HEADING_5
+        } else if (contains(ElementType.FORMAT_HEADING_6, selectionStart, selectionEnd)) {
+            return ElementType.FORMAT_HEADING_6
         } else {
             return null
         }
     }
 
-    fun getAppliedStyles(selectionStart: Int, selectionEnd: Int): ArrayList<TextFormat> {
-        val styles = ArrayList<TextFormat>()
-        TextFormat.values().forEach {
+    fun getAppliedStyles(selectionStart: Int, selectionEnd: Int): ArrayList<ElementType> {
+        val styles = ArrayList<ElementType>()
+        ElementType.values().forEach {
             if (contains(it, selectionStart, selectionEnd)) {
                 styles.add(it)
             }
@@ -1247,9 +1247,9 @@ class AztecText : EditText, TextWatcher {
         getAppliedStyles(start, end).forEach {
             if (!selectedStyles.contains(it) || ignoreSelectedStyles) {
                 when (it) {
-                    TextFormat.FORMAT_BOLD -> removeInlineStyle(it, start, end)
-                    TextFormat.FORMAT_ITALIC -> removeInlineStyle(it, start, end)
-                    TextFormat.FORMAT_STRIKETHROUGH -> removeInlineStyle(it, start, end)
+                    ElementType.FORMAT_BOLD -> removeInlineStyle(it, start, end)
+                    ElementType.FORMAT_ITALIC -> removeInlineStyle(it, start, end)
+                    ElementType.FORMAT_STRIKETHROUGH -> removeInlineStyle(it, start, end)
                     else -> {
                         //do nothing
                     }
@@ -1262,24 +1262,24 @@ class AztecText : EditText, TextWatcher {
         return selectionStart != selectionEnd
     }
 
-    fun toggleFormatting(textFormat: TextFormat) {
+    fun toggleFormatting(textFormat: ElementType) {
 
         history.beforeTextChanged(toFormattedHtml())
 
         when (textFormat) {
-            TextFormat.FORMAT_PARAGRAPH -> heading(false, textFormat)
-            TextFormat.FORMAT_HEADING_1,
-            TextFormat.FORMAT_HEADING_2,
-            TextFormat.FORMAT_HEADING_3,
-            TextFormat.FORMAT_HEADING_4,
-            TextFormat.FORMAT_HEADING_5,
-            TextFormat.FORMAT_HEADING_6 -> heading(true, textFormat)
-            TextFormat.FORMAT_BOLD -> bold(!contains(TextFormat.FORMAT_BOLD))
-            TextFormat.FORMAT_ITALIC -> italic(!contains(TextFormat.FORMAT_ITALIC))
-            TextFormat.FORMAT_STRIKETHROUGH -> strikethrough(!contains(TextFormat.FORMAT_STRIKETHROUGH))
-            TextFormat.FORMAT_UNORDERED_LIST -> unorderedListValid(!contains(TextFormat.FORMAT_UNORDERED_LIST))
-            TextFormat.FORMAT_ORDERED_LIST -> orderedListValid(!contains(TextFormat.FORMAT_ORDERED_LIST))
-            TextFormat.FORMAT_QUOTE -> quote(!contains(TextFormat.FORMAT_QUOTE))
+            ElementType.FORMAT_PARAGRAPH -> heading(false, textFormat)
+            ElementType.FORMAT_HEADING_1,
+            ElementType.FORMAT_HEADING_2,
+            ElementType.FORMAT_HEADING_3,
+            ElementType.FORMAT_HEADING_4,
+            ElementType.FORMAT_HEADING_5,
+            ElementType.FORMAT_HEADING_6 -> heading(true, textFormat)
+            ElementType.FORMAT_BOLD -> bold(!contains(ElementType.FORMAT_BOLD))
+            ElementType.FORMAT_ITALIC -> italic(!contains(ElementType.FORMAT_ITALIC))
+            ElementType.FORMAT_STRIKETHROUGH -> strikethrough(!contains(ElementType.FORMAT_STRIKETHROUGH))
+            ElementType.FORMAT_UNORDERED_LIST -> unorderedListValid(!contains(ElementType.FORMAT_UNORDERED_LIST))
+            ElementType.FORMAT_ORDERED_LIST -> orderedListValid(!contains(ElementType.FORMAT_ORDERED_LIST))
+            ElementType.FORMAT_QUOTE -> quote(!contains(ElementType.FORMAT_QUOTE))
             else -> {
             }
         }
@@ -1287,22 +1287,22 @@ class AztecText : EditText, TextWatcher {
         history.handleHistory(this)
     }
 
-    fun contains(format: TextFormat, selStart: Int = selectionStart, selEnd: Int = selectionEnd): Boolean {
+    fun contains(format: ElementType, selStart: Int = selectionStart, selEnd: Int = selectionEnd): Boolean {
         when (format) {
-            TextFormat.FORMAT_HEADING_1,
-            TextFormat.FORMAT_HEADING_2,
-            TextFormat.FORMAT_HEADING_3,
-            TextFormat.FORMAT_HEADING_4,
-            TextFormat.FORMAT_HEADING_5,
-            TextFormat.FORMAT_HEADING_6 -> return containHeading(format, selStart, selEnd)
-            TextFormat.FORMAT_BOLD -> return containsInlineStyle(TextFormat.FORMAT_BOLD, selStart, selEnd)
-            TextFormat.FORMAT_ITALIC -> return containsInlineStyle(TextFormat.FORMAT_ITALIC, selStart, selEnd)
-            TextFormat.FORMAT_UNDERLINED -> return containsInlineStyle(TextFormat.FORMAT_UNDERLINED, selStart, selEnd)
-            TextFormat.FORMAT_STRIKETHROUGH -> return containsInlineStyle(TextFormat.FORMAT_STRIKETHROUGH, selStart, selEnd)
-            TextFormat.FORMAT_UNORDERED_LIST -> return containsList(TextFormat.FORMAT_UNORDERED_LIST, selStart, selEnd)
-            TextFormat.FORMAT_ORDERED_LIST -> return containsList(TextFormat.FORMAT_ORDERED_LIST, selStart, selEnd)
-            TextFormat.FORMAT_QUOTE -> return containQuote(selectionStart, selectionEnd)
-            TextFormat.FORMAT_LINK -> return containLink(selStart, selEnd)
+            ElementType.FORMAT_HEADING_1,
+            ElementType.FORMAT_HEADING_2,
+            ElementType.FORMAT_HEADING_3,
+            ElementType.FORMAT_HEADING_4,
+            ElementType.FORMAT_HEADING_5,
+            ElementType.FORMAT_HEADING_6 -> return containHeading(format, selStart, selEnd)
+            ElementType.FORMAT_BOLD -> return containsInlineStyle(ElementType.FORMAT_BOLD, selStart, selEnd)
+            ElementType.FORMAT_ITALIC -> return containsInlineStyle(ElementType.FORMAT_ITALIC, selStart, selEnd)
+            ElementType.FORMAT_UNDERLINED -> return containsInlineStyle(ElementType.FORMAT_UNDERLINED, selStart, selEnd)
+            ElementType.FORMAT_STRIKETHROUGH -> return containsInlineStyle(ElementType.FORMAT_STRIKETHROUGH, selStart, selEnd)
+            ElementType.FORMAT_UNORDERED_LIST -> return containsList(ElementType.FORMAT_UNORDERED_LIST, selStart, selEnd)
+            ElementType.FORMAT_ORDERED_LIST -> return containsList(ElementType.FORMAT_ORDERED_LIST, selStart, selEnd)
+            ElementType.FORMAT_QUOTE -> return containQuote(selectionStart, selectionEnd)
+            ElementType.FORMAT_LINK -> return containLink(selStart, selEnd)
             else -> return false
         }
     }
@@ -1354,14 +1354,14 @@ class AztecText : EditText, TextWatcher {
         if (formattingIsApplied()) {
             for (item in selectedStyles) {
                 when (item) {
-                    TextFormat.FORMAT_BOLD -> if (!contains(item, textChangedEvent.inputStart, textChangedEvent.inputStart)) {
-                        applyInlineStyle(TextFormat.FORMAT_BOLD, textChangedEvent.inputStart, textChangedEvent.inputEnd)
+                    ElementType.FORMAT_BOLD -> if (!contains(item, textChangedEvent.inputStart, textChangedEvent.inputStart)) {
+                        applyInlineStyle(ElementType.FORMAT_BOLD, textChangedEvent.inputStart, textChangedEvent.inputEnd)
                     }
-                    TextFormat.FORMAT_ITALIC -> if (!contains(item, textChangedEvent.inputStart, textChangedEvent.inputEnd)) {
-                        applyInlineStyle(TextFormat.FORMAT_ITALIC, textChangedEvent.inputStart, textChangedEvent.inputEnd)
+                    ElementType.FORMAT_ITALIC -> if (!contains(item, textChangedEvent.inputStart, textChangedEvent.inputEnd)) {
+                        applyInlineStyle(ElementType.FORMAT_ITALIC, textChangedEvent.inputStart, textChangedEvent.inputEnd)
                     }
-                    TextFormat.FORMAT_STRIKETHROUGH -> if (!contains(item, textChangedEvent.inputStart, textChangedEvent.inputEnd)) {
-                        applyInlineStyle(TextFormat.FORMAT_STRIKETHROUGH, textChangedEvent.inputStart, textChangedEvent.inputEnd)
+                    ElementType.FORMAT_STRIKETHROUGH -> if (!contains(item, textChangedEvent.inputStart, textChangedEvent.inputEnd)) {
+                        applyInlineStyle(ElementType.FORMAT_STRIKETHROUGH, textChangedEvent.inputStart, textChangedEvent.inputEnd)
                     }
                     else -> {
                         //do nothing
@@ -1614,10 +1614,10 @@ class AztecText : EditText, TextWatcher {
     }
 
     fun removeInlineStylesFromRange(start: Int, end: Int) {
-        removeInlineStyle(TextFormat.FORMAT_BOLD, start, end)
-        removeInlineStyle(TextFormat.FORMAT_ITALIC, start, end)
-        removeInlineStyle(TextFormat.FORMAT_STRIKETHROUGH, start, end)
-        removeInlineStyle(TextFormat.FORMAT_UNDERLINED, start, end)
+        removeInlineStyle(ElementType.FORMAT_BOLD, start, end)
+        removeInlineStyle(ElementType.FORMAT_ITALIC, start, end)
+        removeInlineStyle(ElementType.FORMAT_STRIKETHROUGH, start, end)
+        removeInlineStyle(ElementType.FORMAT_UNDERLINED, start, end)
     }
 
     //logic party copied from TextView
