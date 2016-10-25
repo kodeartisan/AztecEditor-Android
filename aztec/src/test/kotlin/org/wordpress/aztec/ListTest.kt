@@ -29,8 +29,8 @@ class ListTest(listTextFormat: ElementType, listHtmlTag: String) {
         @ParameterizedRobolectricTestRunner.Parameters(name = "Testing lists with {1} tag")
         fun data(): Collection<Array<Any>> {
             return listOf(
-                    arrayOf(ElementType.FORMAT_ORDERED_LIST, "ol"),
-                    arrayOf(ElementType.FORMAT_UNORDERED_LIST, "ul")
+                    arrayOf(ElementType.ORDERED_LIST, "ol"),
+                    arrayOf(ElementType.UNORDERED_LIST, "ul")
             )
         }
     }
@@ -381,8 +381,8 @@ class ListTest(listTextFormat: ElementType, listHtmlTag: String) {
     @Throws(Exception::class)
     fun toggleListType() {
 
-        val oppositeTextFormat = if (listType == ElementType.FORMAT_ORDERED_LIST)
-            ElementType.FORMAT_UNORDERED_LIST else ElementType.FORMAT_ORDERED_LIST
+        val oppositeTextFormat = if (listType == ElementType.ORDERED_LIST)
+            ElementType.UNORDERED_LIST else ElementType.ORDERED_LIST
 
         val oppositeTag = if (listTag.equals("ol")) "ul" else "ol"
 

@@ -84,31 +84,31 @@ class AztecToolbar : FrameLayout, OnMenuItemClickListener {
 
         when (item?.itemId) {
             R.id.paragraph -> {
-                editor?.toggleFormatting(ElementType.FORMAT_PARAGRAPH)
+                editor?.toggleFormatting(ElementType.PARAGRAPH)
                 return true
             }
             R.id.heading_1 -> {
-                editor?.toggleFormatting(ElementType.FORMAT_HEADING_1)
+                editor?.toggleFormatting(ElementType.HEADING_1)
                 return true
             }
             R.id.heading_2 -> {
-                editor?.toggleFormatting(ElementType.FORMAT_HEADING_2)
+                editor?.toggleFormatting(ElementType.HEADING_2)
                 return true
             }
             R.id.heading_3 -> {
-                editor?.toggleFormatting(ElementType.FORMAT_HEADING_3)
+                editor?.toggleFormatting(ElementType.HEADING_3)
                 return true
             }
             R.id.heading_4 -> {
-                editor?.toggleFormatting(ElementType.FORMAT_HEADING_4)
+                editor?.toggleFormatting(ElementType.HEADING_4)
                 return true
             }
             R.id.heading_5 -> {
-                editor?.toggleFormatting(ElementType.FORMAT_HEADING_5)
+                editor?.toggleFormatting(ElementType.HEADING_5)
                 return true
             }
             R.id.heading_6 -> {
-                editor?.toggleFormatting(ElementType.FORMAT_HEADING_6)
+                editor?.toggleFormatting(ElementType.HEADING_6)
                 return true
             }
             else -> return false
@@ -236,12 +236,12 @@ class AztecToolbar : FrameLayout, OnMenuItemClickListener {
 
     private fun selectHeaderMenu(textFormat: ElementType?) {
         when (textFormat) {
-            ElementType.FORMAT_HEADING_1 -> headingMenu?.menu?.getItem(1)?.isChecked = true
-            ElementType.FORMAT_HEADING_2 -> headingMenu?.menu?.getItem(2)?.isChecked = true
-            ElementType.FORMAT_HEADING_3 -> headingMenu?.menu?.getItem(3)?.isChecked = true
-            ElementType.FORMAT_HEADING_4 -> headingMenu?.menu?.getItem(4)?.isChecked = true
-            ElementType.FORMAT_HEADING_5 -> headingMenu?.menu?.getItem(5)?.isChecked = true
-            ElementType.FORMAT_HEADING_6 -> headingMenu?.menu?.getItem(6)?.isChecked = true
+            ElementType.HEADING_1 -> headingMenu?.menu?.getItem(1)?.isChecked = true
+            ElementType.HEADING_2 -> headingMenu?.menu?.getItem(2)?.isChecked = true
+            ElementType.HEADING_3 -> headingMenu?.menu?.getItem(3)?.isChecked = true
+            ElementType.HEADING_4 -> headingMenu?.menu?.getItem(4)?.isChecked = true
+            ElementType.HEADING_5 -> headingMenu?.menu?.getItem(5)?.isChecked = true
+            ElementType.HEADING_6 -> headingMenu?.menu?.getItem(6)?.isChecked = true
             else -> headingMenu?.menu?.getItem(0)?.isChecked = true
         }
     }

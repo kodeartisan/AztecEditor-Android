@@ -200,33 +200,33 @@ class AztecText : EditText, TextWatcher {
 
     private fun bold(valid: Boolean) {
         if (valid) {
-            applyInlineStyle(ElementType.FORMAT_BOLD, selectionStart, selectionEnd)
+            applyInlineStyle(ElementType.BOLD, selectionStart, selectionEnd)
         } else {
-            removeInlineStyle(ElementType.FORMAT_BOLD, selectionStart, selectionEnd)
+            removeInlineStyle(ElementType.BOLD, selectionStart, selectionEnd)
         }
     }
 
     private fun italic(valid: Boolean) {
         if (valid) {
-            applyInlineStyle(ElementType.FORMAT_ITALIC, selectionStart, selectionEnd)
+            applyInlineStyle(ElementType.ITALIC, selectionStart, selectionEnd)
         } else {
-            removeInlineStyle(ElementType.FORMAT_ITALIC, selectionStart, selectionEnd)
+            removeInlineStyle(ElementType.ITALIC, selectionStart, selectionEnd)
         }
     }
 
     fun underline(valid: Boolean) {
         if (valid) {
-            applyInlineStyle(ElementType.FORMAT_UNDERLINED, selectionStart, selectionEnd)
+            applyInlineStyle(ElementType.UNDERLINED, selectionStart, selectionEnd)
         } else {
-            removeInlineStyle(ElementType.FORMAT_UNDERLINED, selectionEnd, selectionEnd)
+            removeInlineStyle(ElementType.UNDERLINED, selectionEnd, selectionEnd)
         }
     }
 
     fun strikethrough(valid: Boolean) {
         if (valid) {
-            applyInlineStyle(ElementType.FORMAT_STRIKETHROUGH, selectionStart, selectionEnd)
+            applyInlineStyle(ElementType.STRIKETHROUGH, selectionStart, selectionEnd)
         } else {
-            removeInlineStyle(ElementType.FORMAT_STRIKETHROUGH, selectionStart, selectionEnd)
+            removeInlineStyle(ElementType.STRIKETHROUGH, selectionStart, selectionEnd)
         }
     }
 
@@ -429,9 +429,9 @@ class AztecText : EditText, TextWatcher {
     //TODO: Come up with a better way to init spans and get their classes (all the "make" methods)
     fun makeBlockSpan(textFormat: ElementType, attrs: String? = null): AztecBlockSpan {
         when (textFormat) {
-            ElementType.FORMAT_ORDERED_LIST -> return AztecOrderedListSpan(bulletColor, bulletMargin, bulletWidth, bulletPadding, attrs)
-            ElementType.FORMAT_UNORDERED_LIST -> return AztecUnorderedListSpan(bulletColor, bulletMargin, bulletWidth, bulletPadding, attrs)
-            ElementType.FORMAT_QUOTE -> return AztecQuoteSpan(quoteBackground, quoteColor, quoteMargin, quoteWidth, quotePadding, attrs)
+            ElementType.ORDERED_LIST -> return AztecOrderedListSpan(bulletColor, bulletMargin, bulletWidth, bulletPadding, attrs)
+            ElementType.UNORDERED_LIST -> return AztecUnorderedListSpan(bulletColor, bulletMargin, bulletWidth, bulletPadding, attrs)
+            ElementType.QUOTE -> return AztecQuoteSpan(quoteBackground, quoteColor, quoteMargin, quoteWidth, quotePadding, attrs)
             else -> return AztecOrderedListSpan(bulletColor, bulletMargin, bulletWidth, bulletPadding)
         }
     }
@@ -448,10 +448,10 @@ class AztecText : EditText, TextWatcher {
 
     fun makeInlineSpan(textFormat: ElementType): CharacterStyle {
         when (textFormat) {
-            ElementType.FORMAT_BOLD -> return AztecStyleSpan(Typeface.BOLD)
-            ElementType.FORMAT_ITALIC -> return AztecStyleSpan(Typeface.ITALIC)
-            ElementType.FORMAT_STRIKETHROUGH -> return AztecStrikethroughSpan()
-            ElementType.FORMAT_UNDERLINED -> return AztecUnderlineSpan()
+            ElementType.BOLD -> return AztecStyleSpan(Typeface.BOLD)
+            ElementType.ITALIC -> return AztecStyleSpan(Typeface.ITALIC)
+            ElementType.STRIKETHROUGH -> return AztecStrikethroughSpan()
+            ElementType.UNDERLINED -> return AztecUnderlineSpan()
             else -> return AztecStyleSpan(Typeface.NORMAL)
         }
     }
@@ -574,17 +574,17 @@ class AztecText : EditText, TextWatcher {
 
             if (headingStart < headingEnd) {
                 when (textFormat) {
-                    ElementType.FORMAT_HEADING_1 ->
+                    ElementType.HEADING_1 ->
                         editableText.setSpan(AztecHeadingSpan(Heading.H1), headingStart, headingEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    ElementType.FORMAT_HEADING_2 ->
+                    ElementType.HEADING_2 ->
                         editableText.setSpan(AztecHeadingSpan(Heading.H2), headingStart, headingEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    ElementType.FORMAT_HEADING_3 ->
+                    ElementType.HEADING_3 ->
                         editableText.setSpan(AztecHeadingSpan(Heading.H3), headingStart, headingEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    ElementType.FORMAT_HEADING_4 ->
+                    ElementType.HEADING_4 ->
                         editableText.setSpan(AztecHeadingSpan(Heading.H4), headingStart, headingEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    ElementType.FORMAT_HEADING_5 ->
+                    ElementType.HEADING_5 ->
                         editableText.setSpan(AztecHeadingSpan(Heading.H5), headingStart, headingEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    ElementType.FORMAT_HEADING_6 ->
+                    ElementType.HEADING_6 ->
                         editableText.setSpan(AztecHeadingSpan(Heading.H6), headingStart, headingEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                     else -> {
                     }
@@ -674,17 +674,17 @@ class AztecText : EditText, TextWatcher {
 
         for (span in spans) {
             when (textFormat) {
-                ElementType.FORMAT_HEADING_1 ->
+                ElementType.HEADING_1 ->
                     return span.heading.equals(AztecHeadingSpan.Heading.H1)
-                ElementType.FORMAT_HEADING_2 ->
+                ElementType.HEADING_2 ->
                     return span.heading.equals(AztecHeadingSpan.Heading.H2)
-                ElementType.FORMAT_HEADING_3 ->
+                ElementType.HEADING_3 ->
                     return span.heading.equals(AztecHeadingSpan.Heading.H3)
-                ElementType.FORMAT_HEADING_4 ->
+                ElementType.HEADING_4 ->
                     return span.heading.equals(AztecHeadingSpan.Heading.H4)
-                ElementType.FORMAT_HEADING_5 ->
+                ElementType.HEADING_5 ->
                     return span.heading.equals(AztecHeadingSpan.Heading.H5)
-                ElementType.FORMAT_HEADING_6 ->
+                ElementType.HEADING_6 ->
                     return span.heading.equals(AztecHeadingSpan.Heading.H6)
                 else -> return false
             }
@@ -697,25 +697,25 @@ class AztecText : EditText, TextWatcher {
 
     fun orderedListValid(valid: Boolean) {
         if (valid) {
-            if (containsList(ElementType.FORMAT_UNORDERED_LIST, selectionStart, selectionEnd)) {
-                switchListType(ElementType.FORMAT_ORDERED_LIST)
+            if (containsList(ElementType.UNORDERED_LIST, selectionStart, selectionEnd)) {
+                switchListType(ElementType.ORDERED_LIST)
             } else {
-                applyBlockStyle(ElementType.FORMAT_ORDERED_LIST)
+                applyBlockStyle(ElementType.ORDERED_LIST)
             }
         } else {
-            removeBlockStyle(ElementType.FORMAT_ORDERED_LIST)
+            removeBlockStyle(ElementType.ORDERED_LIST)
         }
     }
 
     fun unorderedListValid(valid: Boolean) {
         if (valid) {
-            if (containsList(ElementType.FORMAT_ORDERED_LIST, selectionStart, selectionEnd)) {
-                switchListType(ElementType.FORMAT_UNORDERED_LIST)
+            if (containsList(ElementType.ORDERED_LIST, selectionStart, selectionEnd)) {
+                switchListType(ElementType.UNORDERED_LIST)
             } else {
-                applyBlockStyle(ElementType.FORMAT_UNORDERED_LIST)
+                applyBlockStyle(ElementType.UNORDERED_LIST)
             }
         } else {
-            removeBlockStyle(ElementType.FORMAT_UNORDERED_LIST)
+            removeBlockStyle(ElementType.UNORDERED_LIST)
         }
     }
 
@@ -915,9 +915,9 @@ class AztecText : EditText, TextWatcher {
 
     fun quote(valid: Boolean) {
         if (valid) {
-            applyBlockStyle(ElementType.FORMAT_QUOTE)
+            applyBlockStyle(ElementType.QUOTE)
         } else {
-            removeBlockStyle(ElementType.FORMAT_QUOTE)
+            removeBlockStyle(ElementType.QUOTE)
         }
     }
 
@@ -1200,18 +1200,18 @@ class AztecText : EditText, TextWatcher {
     }
 
     fun getAppliedHeading(selectionStart: Int, selectionEnd: Int): ElementType? {
-        if (contains(ElementType.FORMAT_HEADING_1, selectionStart, selectionEnd)) {
-            return ElementType.FORMAT_HEADING_1
-        } else if (contains(ElementType.FORMAT_HEADING_2, selectionStart, selectionEnd)) {
-            return ElementType.FORMAT_HEADING_2
-        } else if (contains(ElementType.FORMAT_HEADING_3, selectionStart, selectionEnd)) {
-            return ElementType.FORMAT_HEADING_3
-        } else if (contains(ElementType.FORMAT_HEADING_4, selectionStart, selectionEnd)) {
-            return ElementType.FORMAT_HEADING_4
-        } else if (contains(ElementType.FORMAT_HEADING_5, selectionStart, selectionEnd)) {
-            return ElementType.FORMAT_HEADING_5
-        } else if (contains(ElementType.FORMAT_HEADING_6, selectionStart, selectionEnd)) {
-            return ElementType.FORMAT_HEADING_6
+        if (contains(ElementType.HEADING_1, selectionStart, selectionEnd)) {
+            return ElementType.HEADING_1
+        } else if (contains(ElementType.HEADING_2, selectionStart, selectionEnd)) {
+            return ElementType.HEADING_2
+        } else if (contains(ElementType.HEADING_3, selectionStart, selectionEnd)) {
+            return ElementType.HEADING_3
+        } else if (contains(ElementType.HEADING_4, selectionStart, selectionEnd)) {
+            return ElementType.HEADING_4
+        } else if (contains(ElementType.HEADING_5, selectionStart, selectionEnd)) {
+            return ElementType.HEADING_5
+        } else if (contains(ElementType.HEADING_6, selectionStart, selectionEnd)) {
+            return ElementType.HEADING_6
         } else {
             return null
         }
@@ -1247,9 +1247,9 @@ class AztecText : EditText, TextWatcher {
         getAppliedStyles(start, end).forEach {
             if (!selectedStyles.contains(it) || ignoreSelectedStyles) {
                 when (it) {
-                    ElementType.FORMAT_BOLD -> removeInlineStyle(it, start, end)
-                    ElementType.FORMAT_ITALIC -> removeInlineStyle(it, start, end)
-                    ElementType.FORMAT_STRIKETHROUGH -> removeInlineStyle(it, start, end)
+                    ElementType.BOLD -> removeInlineStyle(it, start, end)
+                    ElementType.ITALIC -> removeInlineStyle(it, start, end)
+                    ElementType.STRIKETHROUGH -> removeInlineStyle(it, start, end)
                     else -> {
                         //do nothing
                     }
@@ -1267,19 +1267,19 @@ class AztecText : EditText, TextWatcher {
         history.beforeTextChanged(toFormattedHtml())
 
         when (textFormat) {
-            ElementType.FORMAT_PARAGRAPH -> heading(false, textFormat)
-            ElementType.FORMAT_HEADING_1,
-            ElementType.FORMAT_HEADING_2,
-            ElementType.FORMAT_HEADING_3,
-            ElementType.FORMAT_HEADING_4,
-            ElementType.FORMAT_HEADING_5,
-            ElementType.FORMAT_HEADING_6 -> heading(true, textFormat)
-            ElementType.FORMAT_BOLD -> bold(!contains(ElementType.FORMAT_BOLD))
-            ElementType.FORMAT_ITALIC -> italic(!contains(ElementType.FORMAT_ITALIC))
-            ElementType.FORMAT_STRIKETHROUGH -> strikethrough(!contains(ElementType.FORMAT_STRIKETHROUGH))
-            ElementType.FORMAT_UNORDERED_LIST -> unorderedListValid(!contains(ElementType.FORMAT_UNORDERED_LIST))
-            ElementType.FORMAT_ORDERED_LIST -> orderedListValid(!contains(ElementType.FORMAT_ORDERED_LIST))
-            ElementType.FORMAT_QUOTE -> quote(!contains(ElementType.FORMAT_QUOTE))
+            ElementType.PARAGRAPH -> heading(false, textFormat)
+            ElementType.HEADING_1,
+            ElementType.HEADING_2,
+            ElementType.HEADING_3,
+            ElementType.HEADING_4,
+            ElementType.HEADING_5,
+            ElementType.HEADING_6 -> heading(true, textFormat)
+            ElementType.BOLD -> bold(!contains(ElementType.BOLD))
+            ElementType.ITALIC -> italic(!contains(ElementType.ITALIC))
+            ElementType.STRIKETHROUGH -> strikethrough(!contains(ElementType.STRIKETHROUGH))
+            ElementType.UNORDERED_LIST -> unorderedListValid(!contains(ElementType.UNORDERED_LIST))
+            ElementType.ORDERED_LIST -> orderedListValid(!contains(ElementType.ORDERED_LIST))
+            ElementType.QUOTE -> quote(!contains(ElementType.QUOTE))
             else -> {
             }
         }
@@ -1289,20 +1289,20 @@ class AztecText : EditText, TextWatcher {
 
     fun contains(format: ElementType, selStart: Int = selectionStart, selEnd: Int = selectionEnd): Boolean {
         when (format) {
-            ElementType.FORMAT_HEADING_1,
-            ElementType.FORMAT_HEADING_2,
-            ElementType.FORMAT_HEADING_3,
-            ElementType.FORMAT_HEADING_4,
-            ElementType.FORMAT_HEADING_5,
-            ElementType.FORMAT_HEADING_6 -> return containHeading(format, selStart, selEnd)
-            ElementType.FORMAT_BOLD -> return containsInlineStyle(ElementType.FORMAT_BOLD, selStart, selEnd)
-            ElementType.FORMAT_ITALIC -> return containsInlineStyle(ElementType.FORMAT_ITALIC, selStart, selEnd)
-            ElementType.FORMAT_UNDERLINED -> return containsInlineStyle(ElementType.FORMAT_UNDERLINED, selStart, selEnd)
-            ElementType.FORMAT_STRIKETHROUGH -> return containsInlineStyle(ElementType.FORMAT_STRIKETHROUGH, selStart, selEnd)
-            ElementType.FORMAT_UNORDERED_LIST -> return containsList(ElementType.FORMAT_UNORDERED_LIST, selStart, selEnd)
-            ElementType.FORMAT_ORDERED_LIST -> return containsList(ElementType.FORMAT_ORDERED_LIST, selStart, selEnd)
-            ElementType.FORMAT_QUOTE -> return containQuote(selectionStart, selectionEnd)
-            ElementType.FORMAT_LINK -> return containLink(selStart, selEnd)
+            ElementType.HEADING_1,
+            ElementType.HEADING_2,
+            ElementType.HEADING_3,
+            ElementType.HEADING_4,
+            ElementType.HEADING_5,
+            ElementType.HEADING_6 -> return containHeading(format, selStart, selEnd)
+            ElementType.BOLD -> return containsInlineStyle(ElementType.BOLD, selStart, selEnd)
+            ElementType.ITALIC -> return containsInlineStyle(ElementType.ITALIC, selStart, selEnd)
+            ElementType.UNDERLINED -> return containsInlineStyle(ElementType.UNDERLINED, selStart, selEnd)
+            ElementType.STRIKETHROUGH -> return containsInlineStyle(ElementType.STRIKETHROUGH, selStart, selEnd)
+            ElementType.UNORDERED_LIST -> return containsList(ElementType.UNORDERED_LIST, selStart, selEnd)
+            ElementType.ORDERED_LIST -> return containsList(ElementType.ORDERED_LIST, selStart, selEnd)
+            ElementType.QUOTE -> return containQuote(selectionStart, selectionEnd)
+            ElementType.LINK -> return containLink(selStart, selEnd)
             else -> return false
         }
     }
@@ -1354,14 +1354,14 @@ class AztecText : EditText, TextWatcher {
         if (formattingIsApplied()) {
             for (item in selectedStyles) {
                 when (item) {
-                    ElementType.FORMAT_BOLD -> if (!contains(item, textChangedEvent.inputStart, textChangedEvent.inputStart)) {
-                        applyInlineStyle(ElementType.FORMAT_BOLD, textChangedEvent.inputStart, textChangedEvent.inputEnd)
+                    ElementType.BOLD -> if (!contains(item, textChangedEvent.inputStart, textChangedEvent.inputStart)) {
+                        applyInlineStyle(ElementType.BOLD, textChangedEvent.inputStart, textChangedEvent.inputEnd)
                     }
-                    ElementType.FORMAT_ITALIC -> if (!contains(item, textChangedEvent.inputStart, textChangedEvent.inputEnd)) {
-                        applyInlineStyle(ElementType.FORMAT_ITALIC, textChangedEvent.inputStart, textChangedEvent.inputEnd)
+                    ElementType.ITALIC -> if (!contains(item, textChangedEvent.inputStart, textChangedEvent.inputEnd)) {
+                        applyInlineStyle(ElementType.ITALIC, textChangedEvent.inputStart, textChangedEvent.inputEnd)
                     }
-                    ElementType.FORMAT_STRIKETHROUGH -> if (!contains(item, textChangedEvent.inputStart, textChangedEvent.inputEnd)) {
-                        applyInlineStyle(ElementType.FORMAT_STRIKETHROUGH, textChangedEvent.inputStart, textChangedEvent.inputEnd)
+                    ElementType.STRIKETHROUGH -> if (!contains(item, textChangedEvent.inputStart, textChangedEvent.inputEnd)) {
+                        applyInlineStyle(ElementType.STRIKETHROUGH, textChangedEvent.inputStart, textChangedEvent.inputEnd)
                     }
                     else -> {
                         //do nothing
@@ -1614,10 +1614,10 @@ class AztecText : EditText, TextWatcher {
     }
 
     fun removeInlineStylesFromRange(start: Int, end: Int) {
-        removeInlineStyle(ElementType.FORMAT_BOLD, start, end)
-        removeInlineStyle(ElementType.FORMAT_ITALIC, start, end)
-        removeInlineStyle(ElementType.FORMAT_STRIKETHROUGH, start, end)
-        removeInlineStyle(ElementType.FORMAT_UNDERLINED, start, end)
+        removeInlineStyle(ElementType.BOLD, start, end)
+        removeInlineStyle(ElementType.ITALIC, start, end)
+        removeInlineStyle(ElementType.STRIKETHROUGH, start, end)
+        removeInlineStyle(ElementType.UNDERLINED, start, end)
     }
 
     //logic party copied from TextView
