@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.wordpress.aztec
+package org.wordpress.aztec.spans
 
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -25,18 +25,32 @@ import android.text.Layout
 import android.text.TextUtils
 import android.text.style.BulletSpan
 
-class AztecBulletSpan : BulletSpan {
+class AztecUnorderedListSpan : BulletSpan, AztecListSpan {
+
+    private final val TAG = "ul"
 
     private var bulletColor: Int = 0
     private var bulletMargin: Int = 0
     private var bulletPadding: Int = 0
     private var bulletWidth: Int = 0
 
-    constructor(bulletColor: Int, bulletMargin: Int, bulletWidth: Int, bulletPadding: Int) {
+
+    //used for marking
+    constructor() : super(0) {
+    }
+
+    override var attributes: String? = null
+
+    constructor(attributes: String) {
+        this.attributes = attributes
+    }
+
+    constructor(bulletColor: Int, bulletMargin: Int, bulletWidth: Int, bulletPadding: Int, attributes: String? = null) {
         this.bulletColor = bulletColor
         this.bulletMargin = bulletMargin
         this.bulletWidth = bulletWidth
         this.bulletPadding = bulletPadding
+        this.attributes = attributes
     }
 
     constructor(src: Parcel) : super(src) {
@@ -44,6 +58,18 @@ class AztecBulletSpan : BulletSpan {
         this.bulletMargin = src.readInt()
         this.bulletWidth = src.readInt()
         this.bulletPadding = src.readInt()
+        this.attributes = src.readString()
+    }
+
+    override fun getStartTag(): String {
+        if (TextUtils.isEmpty(attributes)) {
+            return TAG
+        }
+        return TAG + attributes
+    }
+
+    override fun getEndTag(): String {
+        return TAG
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
@@ -52,6 +78,7 @@ class AztecBulletSpan : BulletSpan {
         dest.writeInt(bulletMargin)
         dest.writeInt(bulletWidth)
         dest.writeInt(bulletPadding)
+        dest.writeString(attributes)
     }
 
     override fun getLeadingMargin(first: Boolean): Int {
@@ -62,32 +89,32 @@ class AztecBulletSpan : BulletSpan {
                                    top: Int, baseline: Int, bottom: Int,
                                    text: CharSequence, start: Int, end: Int,
                                    first: Boolean, l: Layout) {
-        TextUtils.split(text.toString(), "\n").forEach {
-            val style = p.style
+        if (!first) return
 
-            val oldColor = p.color
+        val style = p.style
 
-            p.color = bulletColor
-            p.style = Paint.Style.FILL
+        val oldColor = p.color
 
-            if (c.isHardwareAccelerated) {
-                if (bulletPath == null) {
-                    bulletPath = Path()
-                    // Bullet is slightly better to avoid aliasing artifacts on mdpi devices.
-                    bulletPath!!.addCircle(0.0f, 0.0f, bulletWidth.toFloat(), Path.Direction.CW)
-                }
+        p.color = bulletColor
+        p.style = Paint.Style.FILL
 
-                c.save()
-                c.translate((x + bulletMargin + dir * bulletWidth).toFloat(), (top + bottom) / 2.0f)
-                c.drawPath(bulletPath!!, p)
-                c.restore()
-            } else {
-                c.drawCircle((x + bulletMargin + dir * bulletWidth).toFloat(), (top + bottom) / 2.0f, bulletWidth.toFloat(), p)
+        if (c.isHardwareAccelerated) {
+            if (bulletPath == null) {
+                bulletPath = Path()
+                // Bullet is slightly better to avoid aliasing artifacts on mdpi devices.
+                bulletPath!!.addCircle(0.0f, 0.0f, bulletWidth.toFloat(), Path.Direction.CW)
             }
 
-            p.color = oldColor
-            p.style = style
+            c.save()
+            c.translate((x + bulletMargin + dir * bulletWidth).toFloat(), (top + bottom) / 2.0f)
+            c.drawPath(bulletPath!!, p)
+            c.restore()
+        } else {
+            c.drawCircle((x + bulletMargin + dir * bulletWidth).toFloat(), (top + bottom) / 2.0f, bulletWidth.toFloat(), p)
         }
+
+        p.color = oldColor
+        p.style = style
 
     }
 

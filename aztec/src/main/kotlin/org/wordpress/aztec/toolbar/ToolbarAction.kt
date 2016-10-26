@@ -5,16 +5,20 @@ import org.wordpress.aztec.TextFormat
 import java.util.*
 
 /**
- * Describes what actions toolbar can perform and what buttons they are binded too
+ * Describes what actions toolbar can perform and what buttons they are bound to
  */
 enum class ToolbarAction constructor(val buttonId: Int, val actionType: ToolbarActionType, val textFormat: TextFormat?) {
     ADD_MEDIA(R.id.format_bar_button_media, ToolbarActionType.OTHER, null),
+    HEADING(R.id.format_bar_button_heading, ToolbarActionType.OTHER, null),
     BOLD(R.id.format_bar_button_bold, ToolbarActionType.INLINE_STYLE, TextFormat.FORMAT_BOLD),
     ITALIC(R.id.format_bar_button_italic, ToolbarActionType.INLINE_STYLE, TextFormat.FORMAT_ITALIC),
-    BULLET_LIST(R.id.format_bar_button_ul, ToolbarActionType.BLOCK_STYLE, TextFormat.FORMAT_BULLET),
-    NUMBERED_LIST(R.id.format_bar_button_ol, ToolbarActionType.OTHER, null), //temporary
-    LINK(R.id.format_bar_button_link, ToolbarActionType.OTHER, TextFormat.FORMAT_LINK),
+    STRIKETHROUGH(R.id.format_bar_button_strikethrough, ToolbarActionType.INLINE_STYLE, TextFormat.FORMAT_STRIKETHROUGH),
+    UNORDERED_LIST(R.id.format_bar_button_ul, ToolbarActionType.BLOCK_STYLE, TextFormat.FORMAT_UNORDERED_LIST),
+    ORDERED_LIST(R.id.format_bar_button_ol, ToolbarActionType.BLOCK_STYLE, TextFormat.FORMAT_ORDERED_LIST),
     QUOTE(R.id.format_bar_button_quote, ToolbarActionType.BLOCK_STYLE, TextFormat.FORMAT_QUOTE),
+    LINK(R.id.format_bar_button_link, ToolbarActionType.OTHER, TextFormat.FORMAT_LINK),
+    MORE(R.id.format_bar_button_more, ToolbarActionType.OTHER, TextFormat.FORMAT_MORE),
+    PAGE(R.id.format_bar_button_page, ToolbarActionType.OTHER, TextFormat.FORMAT_PAGE),
     HTML(R.id.format_bar_button_html, ToolbarActionType.OTHER, null);
 
     companion object {
