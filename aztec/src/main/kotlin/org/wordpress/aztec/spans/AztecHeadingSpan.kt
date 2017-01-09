@@ -4,11 +4,14 @@ import android.text.TextPaint
 import android.text.TextUtils
 import android.text.style.MetricAffectingSpan
 import org.wordpress.aztec.TextFormat
+import org.wordpress.aztec.model.ElementNode
 
 class AztecHeadingSpan @JvmOverloads constructor(var textFormat: TextFormat, attrs: String = "") : MetricAffectingSpan(), AztecLineBlockSpan, AztecContentSpan, AztecInlineSpan {
 
     lateinit var heading: Heading
     override var attributes: String = attrs
+    override var node: ElementNode? = null
+
 
     companion object {
         private val SCALE_H1: Float = 2.0f
@@ -31,7 +34,7 @@ class AztecHeadingSpan @JvmOverloads constructor(var textFormat: TextFormat, att
         }
     }
 
-    constructor(tag: String, attrs: String = "") : this(getTextFormat(tag), attrs) {
+    constructor(tag: String, attrs: String = "", node: ElementNode? = null) : this(getTextFormat(tag), attrs) {
 
     }
 

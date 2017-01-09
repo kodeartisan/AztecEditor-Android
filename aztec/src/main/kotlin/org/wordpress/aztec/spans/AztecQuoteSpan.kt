@@ -26,6 +26,7 @@ import android.text.TextUtils
 import android.text.style.LineBackgroundSpan
 import android.text.style.QuoteSpan
 import org.wordpress.aztec.formatting.BlockFormatter
+import org.wordpress.aztec.model.ElementNode
 
 
 class AztecQuoteSpan : QuoteSpan, LineBackgroundSpan, AztecBlockSpan {
@@ -41,7 +42,7 @@ class AztecQuoteSpan : QuoteSpan, LineBackgroundSpan, AztecBlockSpan {
     private var quoteWidth: Int = 0
 
     override var attributes: String = ""
-
+    override var node: ElementNode? = null
 
     constructor(attributes: String = "") : super() {
         this.attributes = attributes

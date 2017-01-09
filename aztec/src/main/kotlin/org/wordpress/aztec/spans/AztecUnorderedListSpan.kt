@@ -25,6 +25,7 @@ import android.text.Layout
 import android.text.TextUtils
 import android.text.style.BulletSpan
 import org.wordpress.aztec.formatting.BlockFormatter
+import org.wordpress.aztec.model.ElementNode
 
 class AztecUnorderedListSpan : BulletSpan, AztecListSpan {
 
@@ -37,6 +38,7 @@ class AztecUnorderedListSpan : BulletSpan, AztecListSpan {
 
 
     override var attributes: String = ""
+    override var node: ElementNode? = null
     override var lastItem: AztecListItemSpan = AztecListItemSpan()
 
     //used for marking

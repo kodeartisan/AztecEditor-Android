@@ -25,6 +25,7 @@ import android.text.TextUtils
 import android.text.style.CharacterStyle
 import android.text.style.UpdateAppearance
 import org.wordpress.aztec.formatting.InlineFormatter
+import org.wordpress.aztec.model.ElementNode
 
 class AztecCodeSpan : CharacterStyle, UpdateAppearance, ParcelableSpan, AztecContentSpan, AztecInlineSpan {
 
@@ -34,6 +35,7 @@ class AztecCodeSpan : CharacterStyle, UpdateAppearance, ParcelableSpan, AztecCon
     private var codeColor: Int = 0
 
     override var attributes: String = ""
+    override var node: ElementNode? = null
 
     constructor(attributes: String = "") : super() {
         this.attributes = attributes

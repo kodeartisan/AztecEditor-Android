@@ -22,6 +22,7 @@ import android.text.TextPaint
 import android.text.TextUtils
 import android.text.style.URLSpan
 import org.wordpress.aztec.formatting.LinkFormatter
+import org.wordpress.aztec.model.ElementNode
 
 class AztecURLSpan : URLSpan, AztecContentSpan, AztecInlineSpan {
 
@@ -31,6 +32,7 @@ class AztecURLSpan : URLSpan, AztecContentSpan, AztecInlineSpan {
     private var linkUnderline = true
 
     override var attributes: String = ""
+    override var node: ElementNode? = null
 
     constructor(url: String, attributes: String = "") : super(url) {
         if (attributes.isEmpty()) {

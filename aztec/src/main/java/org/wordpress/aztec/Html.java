@@ -120,8 +120,8 @@ public class Html {
      * a) be preloaded by the zygote, or b) not loaded until absolutely
      * necessary.
      */
-    private static class HtmlParser {
-        private static final HTMLSchema schema = new AztecHtmlSchema();
+    static class HtmlParser {
+        static final HTMLSchema schema = new AztecHtmlSchema();
     }
 
     /**

@@ -25,6 +25,7 @@ import android.text.Spanned
 import android.text.TextUtils
 import android.text.style.LeadingMarginSpan
 import org.wordpress.aztec.formatting.BlockFormatter
+import org.wordpress.aztec.model.ElementNode
 
 class AztecOrderedListSpan : LeadingMarginSpan.Standard, AztecListSpan {
 
@@ -36,13 +37,16 @@ class AztecOrderedListSpan : LeadingMarginSpan.Standard, AztecListSpan {
     private var bulletWidth: Int = 0 //we are using bullet width to maintain same margin with bullet list
 
     override var attributes: String = ""
+    override var node: ElementNode? = null
     override var lastItem: AztecListItemSpan = AztecListItemSpan()
 
     //used for marking
     constructor() : super(0) {
     }
 
-    constructor(attributes: String) : super(0) {
+    constructor(attributes: String,
+                node: ElementNode? = null
+    ) : super(0) {
         this.attributes = attributes
     }
 

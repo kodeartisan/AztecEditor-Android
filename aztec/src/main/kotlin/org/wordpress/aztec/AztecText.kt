@@ -38,6 +38,7 @@ import org.wordpress.aztec.formatting.BlockFormatter
 import org.wordpress.aztec.formatting.InlineFormatter
 import org.wordpress.aztec.formatting.LineBlockFormatter
 import org.wordpress.aztec.formatting.LinkFormatter
+import org.wordpress.aztec.model.ElementNode
 import org.wordpress.aztec.source.Format
 import org.wordpress.aztec.spans.*
 import org.wordpress.aztec.util.TypefaceCache
@@ -69,6 +70,8 @@ class AztecText : EditText, TextWatcher {
     lateinit var blockFormatter: BlockFormatter
     val lineBlockFormatter: LineBlockFormatter
     lateinit var linkFormatter: LinkFormatter
+
+    private var root: ElementNode = ElementNode()
 
     interface OnSelectionChangedListener {
         fun onSelectionChanged(selStart: Int, selEnd: Int)
@@ -476,6 +479,8 @@ class AztecText : EditText, TextWatcher {
 
         val builder = SpannableStringBuilder()
         val parser = AztecParser()
+
+        root = ElementNode()
         builder.append(parser.fromHtml(Format.clearFormatting(source), context))
         switchToAztecStyle(builder, 0, builder.length)
         disableTextChangedListener()
@@ -640,6 +645,7 @@ class AztecText : EditText, TextWatcher {
                 val textToPaste = clip.getItemAt(i).coerceToText(context)
 
                 val builder = SpannableStringBuilder()
+                root = ElementNode()
                 builder.append(parser.fromHtml(Format.clearFormatting(textToPaste.toString()), context).trim())
                 Selection.setSelection(editable, max)
 
