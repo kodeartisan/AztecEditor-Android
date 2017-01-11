@@ -104,8 +104,8 @@ class HtmlModelParser {
 
         private fun startElement(tag: String, attributes: Attributes) {
             if (!tag.equals("aztec_cursor", ignoreCase = true) && !tag.equals("body", ignoreCase = true) && !tag.equals("html", ignoreCase = true)) {
-                val newElement = ElementNode(tag, Html.stringifyAttributes(attributes).toString(), root)
-                root!!.children.add(newElement)
+                val newElement = ElementNode(0, tag, Html.stringifyAttributes(attributes).toString(), root)
+                root!!.addNode(newElement)
                 root = newElement
             }
         }
@@ -184,7 +184,7 @@ class HtmlModelParser {
                 }
             }
 
-            root?.children?.add(ElementText(sb.toString()))
+            root?.addText(sb.toString())
         }
 
         @Throws(SAXException::class)
