@@ -27,8 +27,7 @@ import android.text.style.CharacterStyle
 import android.text.style.ImageSpan
 import android.text.style.ParagraphStyle
 import org.ccil.cowan.tagsoup.Parser
-import org.wordpress.aztec.model.ElementNode
-import org.wordpress.aztec.model.ElementText
+import org.wordpress.aztec.model.*
 import org.wordpress.aztec.spans.*
 import org.xml.sax.*
 import org.xml.sax.ext.LexicalHandler
@@ -38,7 +37,7 @@ import java.util.*
 
 class HtmlModelParser {
 
-    fun fromHtml(source: String): ElementNode? {
+    fun fromHtml(source: String): ElementNode {
         val tidySource = tidy(source)
 
         val parser = Parser()
@@ -61,14 +60,14 @@ class HtmlModelParser {
     }
 
     internal class HtmlToModelConverter(private val source: String, parser: Parser) : ContentHandler, LexicalHandler {
-        private var root: ElementNode? = null
+        private var root: ElementNode
         private val reader: XMLReader = parser
 
         init {
             root = ElementNode()
         }
 
-        fun convert(): ElementNode? {
+        fun convert(): ElementNode {
             reader.contentHandler = this
             try {
                 reader.setProperty(Parser.lexicalHandlerProperty, this)
@@ -104,15 +103,24 @@ class HtmlModelParser {
 
         private fun startElement(tag: String, attributes: Attributes) {
             if (!tag.equals("aztec_cursor", ignoreCase = true) && !tag.equals("body", ignoreCase = true) && !tag.equals("html", ignoreCase = true)) {
-                val newElement = ElementNode(0, tag, Html.stringifyAttributes(attributes).toString(), root)
-                root!!.addNode(newElement)
+
+                val newElement: ElementNode
+                when (tag) {
+                    "ul" -> newElement = UnorderedListNode(root.end ?: 0, Html.stringifyAttributes(attributes).toString(), root)
+                    "ol" -> newElement = OrderedListNode(root.end ?: 0, Html.stringifyAttributes(attributes).toString(), root)
+                    "li" -> newElement = ListItemNode(root.end ?: 0, Html.stringifyAttributes(attributes).toString(), root)
+                    else -> {
+                        newElement = ElementNode(root.end ?: 0, tag, Html.stringifyAttributes(attributes).toString(), root)
+                    }
+                }
+                root.addNode(newElement)
                 root = newElement
             }
         }
 
         private fun endElement() {
-            if (root!!.parent != null) {
-                root = root!!.parent
+            if (root.parent != null) {
+                root = root.parent!!
             }
         }
 

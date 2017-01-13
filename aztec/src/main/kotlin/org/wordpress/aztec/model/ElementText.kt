@@ -4,7 +4,10 @@ import android.text.SpannableStringBuilder
 
 class ElementText(override var start: Int, var text: String = "") : Element {
 
-    override var end: Int = start + text.length
+    override var length: Int = text.length
+        get() = text.length
+    override var end: Int = start + length
+        get() = start + length
 
     override fun toSpanned(sb: SpannableStringBuilder) {
         sb.append(text)
@@ -14,10 +17,10 @@ class ElementText(override var start: Int, var text: String = "") : Element {
         return text
     }
 
-    override fun onTextChanged(start: Int, removedCount: Int, addedText: String) {
-        if (removedCount > 0) {
-            text.removeRange(start, Math.min(start + removedCount, end))
+    override fun onTextChanged(changeStart: Int, removeCount: Int, addedText: String) {
+        if (removeCount > 0) {
+            text.removeRange(Math.max(start, changeStart), Math.min(changeStart + removeCount, end))
         }
-        text +=addedText
+        text += addedText
     }
 }

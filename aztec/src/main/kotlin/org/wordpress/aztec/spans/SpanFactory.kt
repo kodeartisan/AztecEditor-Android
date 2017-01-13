@@ -10,9 +10,8 @@ import java.util.*
 
 class SpanFactory {
     companion object {
-        fun createSpan(sb: SpannableStringBuilder, node: ElementNode, tag: String = "", attributes: String = "", start: Int) : AztecSpan? {
+        fun createSpan(sb: SpannableStringBuilder, node: ElementNode, tag: String = "", attributes: String = "") : AztecSpan? {
             var span: AztecSpan? = null
-            val end = sb.length
             val type = Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
 
             when (tag.toLowerCase()) {
@@ -26,7 +25,7 @@ class SpanFactory {
 
             if (span != null) {
                 span.node = node
-                sb.setSpan(span, start, end, type)
+                sb.setSpan(span, node.start, node.end, type)
             }
 
             return span

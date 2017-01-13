@@ -393,6 +393,10 @@ class AztecText : EditText, TextWatcher {
     }
 
     override fun beforeTextChanged(text: CharSequence, start: Int, count: Int, after: Int) {
+
+        root.onTextChanged(start, count, text.toString())
+        val span = SpanModelParser().toSpanned(root)
+
         if (!isViewInitialized) return
 
         if (selectionEnd < text.length && text[selectionEnd] == Constants.ZWJ_CHAR) {
@@ -479,8 +483,10 @@ class AztecText : EditText, TextWatcher {
 
         val builder = SpannableStringBuilder()
         val parser = AztecParser()
+        val modelParser = HtmlModelParser()
 
-        root = ElementNode()
+        root = modelParser.fromHtml(source)
+
         builder.append(parser.fromHtml(Format.clearFormatting(source), context))
         switchToAztecStyle(builder, 0, builder.length)
         disableTextChangedListener()
@@ -500,6 +506,9 @@ class AztecText : EditText, TextWatcher {
         if (withCursorTag && selectionEnd > 0) {
             output.setSpan(AztecCursorSpan(), selectionEnd, selectionEnd, Spanned.SPAN_MARK_MARK)
         }
+
+        val modelParser = HtmlModelParser()
+        val html = modelParser.toHtml(root)
 
         return Format.clearFormatting(parser.toHtml(output, withCursorTag))
     }
