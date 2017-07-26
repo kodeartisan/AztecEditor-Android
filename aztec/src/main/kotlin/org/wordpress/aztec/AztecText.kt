@@ -722,6 +722,11 @@ class AztecText : AppCompatAutoCompleteTextView, TextWatcher, UnknownHtmlSpan.On
 
     private fun loadImages() {
         val spans = this.text.getSpans(0, text.length, AztecImageSpan::class.java)
+
+        // maxidth set to the biggest of screen width/height to cater for device rotation
+        val maxWidth = Math.max(context.resources.displayMetrics.widthPixels,
+                context.resources.displayMetrics.heightPixels)
+
         spans.forEach {
             val callbacks = object : Html.ImageGetter.Callbacks {
 
@@ -744,11 +749,6 @@ class AztecText : AppCompatAutoCompleteTextView, TextWatcher, UnknownHtmlSpan.On
                     }
                 }
             }
-
-            // maxidth set to the biggest of screen width/height to cater for device rotation
-            val maxWidth = Math.max(context.resources.displayMetrics.widthPixels,
-                    context.resources.displayMetrics.heightPixels)
-
             it.imageProvider = object : AztecDynamicImageSpan.IImageProvider {
                 override fun requestImage(span: AztecDynamicImageSpan) {
                     imageGetter?.loadImage((span as AztecImageSpan).getSource(), callbacks, maxWidth)
