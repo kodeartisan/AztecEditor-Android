@@ -30,7 +30,7 @@ abstract class AztecDynamicImageSpan(val context: Context, var imageProvider: II
     fun setDrawable(newDrawable: Drawable?) {
         drawableRef = WeakReference<Drawable>(newDrawable)
 
-        originalBounds = Rect(getDrawable()?.bounds ?: Rect(0, 0, 0, 0))
+        originalBounds = Rect(newDrawable?.bounds ?: Rect(0, 0, 0, 0))
 
         setInitBounds(newDrawable)
 
@@ -202,18 +202,14 @@ abstract class AztecDynamicImageSpan(val context: Context, var imageProvider: II
 
         if (drawable == null) {
             imageProvider.requestImage(this)
-        }
-
-        if (getDrawable() != null) {
+        } else {
             var transY = top
             if (mVerticalAlignment == DynamicDrawableSpan.ALIGN_BASELINE) {
                 transY -= paint.fontMetricsInt.descent
             }
 
             canvas.translate(x, transY.toFloat())
-            getDrawable()!!.draw(canvas)
-        } else {
-            val s = "a"
+            drawable!!.draw(canvas)
         }
 
         canvas.restore()

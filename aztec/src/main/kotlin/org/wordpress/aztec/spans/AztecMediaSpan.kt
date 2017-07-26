@@ -44,8 +44,8 @@ abstract class AztecMediaSpan(context: Context, imageProvider: IImageProvider, o
     }
 
     private fun applyOverlayGravity(overlay: Drawable?, gravity: Int) {
-        if (getDrawable() != null && overlay != null) {
-            val rect = Rect(0, 0, getDrawable()!!.bounds.width(), getDrawable()!!.bounds.height())
+        if (drawable != null && overlay != null) {
+            val rect = Rect(0, 0, drawable!!.bounds.width(), drawable!!.bounds.height())
             val outRect = Rect()
 
             Gravity.apply(gravity, overlay.bounds.width(), overlay.bounds.height(), rect, outRect)
@@ -59,9 +59,7 @@ abstract class AztecMediaSpan(context: Context, imageProvider: IImageProvider, o
 
         if (drawable == null) {
             imageProvider.requestImage(this)
-        }
-
-        if (getDrawable() != null) {
+        } else {
             var transY = top
             if (mVerticalAlignment == ALIGN_BASELINE) {
                 transY -= paint.fontMetricsInt.descent
@@ -69,8 +67,6 @@ abstract class AztecMediaSpan(context: Context, imageProvider: IImageProvider, o
 
             canvas.translate(x, transY.toFloat())
             getDrawable()!!.draw(canvas)
-        } else {
-            val s = "a"
         }
 
         overlays.forEach {
