@@ -92,7 +92,11 @@ class LineBlockFormatter(editor: AztecText) : AztecFormatter(editor) {
 
         val span = AztecHorizontalRuleSpan(
                 editor.context,
-                ContextCompat.getDrawable(editor.context, R.drawable.img_hr),
+                object : AztecDynamicImageSpan.IImageProvider {
+                    override fun requestImage(span: AztecDynamicImageSpan) {
+                        span.drawable = ContextCompat.getDrawable(editor.context, R.drawable.img_hr)
+                    }
+                },
                 nestingLevel,
                 editor
         )
@@ -111,14 +115,14 @@ class LineBlockFormatter(editor: AztecText) : AztecFormatter(editor) {
         )
     }
 
-    fun insertVideo(drawable: Drawable?, attributes: Attributes, onVideoTappedListener: OnVideoTappedListener?) {
+    fun insertVideo(imageProvider: AztecDynamicImageSpan.IImageProvider, attributes: Attributes, onVideoTappedListener: OnVideoTappedListener?) {
         val nestingLevel = IAztecNestable.getNestingLevelAt(editableText, selectionStart)
-        val span = AztecVideoSpan(editor.context, drawable, nestingLevel, AztecAttributes(attributes), onVideoTappedListener, editor)
+        val span = AztecVideoSpan(editor.context, imageProvider, nestingLevel, AztecAttributes(attributes), onVideoTappedListener, editor)
         insertMedia(span)
     }
 
-    fun insertImage(drawable: Drawable?, attributes: Attributes, onImageTappedListener: OnImageTappedListener?) {
-        val span = AztecImageSpan(editor.context, drawable, AztecAttributes(attributes), onImageTappedListener, editor)
+    fun insertImage(imageProvider: AztecDynamicImageSpan.IImageProvider, attributes: Attributes, onImageTappedListener: OnImageTappedListener?) {
+        val span = AztecImageSpan(editor.context, imageProvider, AztecAttributes(attributes), onImageTappedListener, editor)
         insertMedia(span)
     }
 

@@ -7,11 +7,11 @@ import android.view.Gravity
 import org.wordpress.aztec.AztecAttributes
 import org.wordpress.aztec.AztecText
 
-class AztecVideoSpan(context: Context, drawable: Drawable?, override var nestingLevel: Int,
+class AztecVideoSpan(context: Context, imageProvider: IImageProvider, override var nestingLevel: Int,
                      attributes: AztecAttributes = AztecAttributes(),
                      var onVideoTappedListener: AztecText.OnVideoTappedListener? = null,
                      editor: AztecText? = null) :
-        AztecMediaSpan(context, drawable, attributes, editor), IAztecFullWidthImageSpan, IAztecSpan {
+        AztecMediaSpan(context, imageProvider, attributes, editor), IAztecFullWidthImageSpan, IAztecSpan {
 
     override val TAG: String = "video"
 

@@ -11,8 +11,8 @@ import org.wordpress.aztec.AztecText
 import java.lang.ref.WeakReference
 import java.util.*
 
-abstract class AztecMediaSpan(context: Context, drawable: Drawable?, override var attributes: AztecAttributes = AztecAttributes(),
-                              editor: AztecText? = null) : AztecDynamicImageSpan(context, drawable), IAztecAttributedSpan {
+abstract class AztecMediaSpan(context: Context, imageProvider: IImageProvider, override var attributes: AztecAttributes = AztecAttributes(),
+                              editor: AztecText? = null) : AztecDynamicImageSpan(context, imageProvider), IAztecAttributedSpan {
 
     abstract val TAG: String
 
@@ -20,16 +20,6 @@ abstract class AztecMediaSpan(context: Context, drawable: Drawable?, override va
 
     init {
         textView = editor
-    }
-
-    fun setDrawable(newDrawable: Drawable?) {
-        drawableRef = WeakReference<Drawable>(newDrawable)
-
-        originalBounds = Rect(getDrawable()?.bounds ?: Rect(0, 0, 0, 0))
-
-        setInitBounds(newDrawable)
-
-        computeAspectRatio(newDrawable)
     }
 
     fun setOverlay(index: Int, newDrawable: Drawable?, gravity: Int) {
@@ -67,6 +57,10 @@ abstract class AztecMediaSpan(context: Context, drawable: Drawable?, override va
     override fun draw(canvas: Canvas, text: CharSequence, start: Int, end: Int, x: Float, top: Int, y: Int, bottom: Int, paint: Paint) {
         canvas.save()
 
+        if (drawable == null) {
+            imageProvider.requestImage(this)
+        }
+
         if (getDrawable() != null) {
             var transY = top
             if (mVerticalAlignment == ALIGN_BASELINE) {
@@ -75,6 +69,8 @@ abstract class AztecMediaSpan(context: Context, drawable: Drawable?, override va
 
             canvas.translate(x, transY.toFloat())
             getDrawable()!!.draw(canvas)
+        } else {
+            val s = "a"
         }
 
         overlays.forEach {

@@ -30,7 +30,6 @@ import org.wordpress.aztec.spans.*
 import org.xml.sax.Attributes
 
 class AztecTagHandler : Html.TagHandler {
-
     private var order = 0
 
     override fun handleTag(opening: Boolean, tag: String, output: Editable,
@@ -97,7 +96,11 @@ class AztecTagHandler : Html.TagHandler {
             LINE -> {
                 if (opening) {
                     // Add an extra newline above the line to prevent weird typing on the line above
-                    start(output, AztecHorizontalRuleSpan(context, ContextCompat.getDrawable(context, R.drawable.img_hr), nestingLevel))
+                    start(output, AztecHorizontalRuleSpan(context, object : AztecDynamicImageSpan.IImageProvider {
+                        override fun requestImage(span: AztecDynamicImageSpan) {
+                            span.drawable = ContextCompat.getDrawable(context, R.drawable.img_hr)
+                        }
+                    }, nestingLevel))
 
                     output.append(Constants.MAGIC_CHAR)
                 } else {
@@ -120,18 +123,26 @@ class AztecTagHandler : Html.TagHandler {
     }
 
     private fun createImageSpan(attributes: AztecAttributes, context: Context) : AztecMediaSpan {
-        val styles = context.obtainStyledAttributes(R.styleable.AztecText)
-        val loadingDrawable = ContextCompat.getDrawable(context, styles.getResourceId(R.styleable.AztecText_drawableLoading, R.drawable.ic_image_loading))
-        styles.recycle()
-        return AztecImageSpan(context, loadingDrawable, attributes)
+        return AztecImageSpan(context, object : AztecDynamicImageSpan.IImageProvider {
+            override fun requestImage(span: AztecDynamicImageSpan) {
+                val styles = context.obtainStyledAttributes(R.styleable.AztecText)
+                span.drawable = ContextCompat.getDrawable(context, styles.getResourceId(R.styleable.AztecText_drawableLoading, R.drawable.ic_image_loading))
+                styles.recycle()
+            }
+
+        }, attributes)
     }
 
     private fun createVideoSpan(attributes: AztecAttributes,
                                 context: Context, nestingLevel: Int) : AztecMediaSpan {
-        val styles = context.obtainStyledAttributes(R.styleable.AztecText)
-        val loadingDrawable = ContextCompat.getDrawable(context, styles.getResourceId(R.styleable.AztecText_drawableLoading, R.drawable.ic_image_loading))
-        styles.recycle()
-        return AztecVideoSpan(context, loadingDrawable, nestingLevel, attributes)
+        return AztecVideoSpan(context, object : AztecDynamicImageSpan.IImageProvider {
+            override fun requestImage(span: AztecDynamicImageSpan) {
+                val styles = context.obtainStyledAttributes(R.styleable.AztecText)
+                span.drawable = ContextCompat.getDrawable(context, styles.getResourceId(R.styleable.AztecText_drawableLoading, R.drawable.ic_image_loading))
+                styles.recycle()
+            }
+
+        }, nestingLevel, attributes)
     }
 
     private fun handleElement(output: Editable, opening: Boolean, span: Any) {

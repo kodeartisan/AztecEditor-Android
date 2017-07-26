@@ -11,16 +11,39 @@ import android.text.style.DynamicDrawableSpan
 import android.view.View
 import org.wordpress.aztec.AztecText
 import java.lang.ref.WeakReference
+import java.util.logging.Logger
 
-abstract class AztecDynamicImageSpan(val context: Context, imageDrawable: Drawable?) : DynamicDrawableSpan() {
+abstract class AztecDynamicImageSpan(val context: Context, var imageProvider: IImageProvider) : DynamicDrawableSpan() {
+
+    protected var drawableRef: WeakReference<Drawable> = WeakReference<Drawable>(null)
 
     var textView: AztecText? = null
-    var originalBounds = Rect(imageDrawable?.bounds ?: Rect(0, 0, 0, 0))
+    lateinit var originalBounds: Rect
     var aspectRatio: Double = 1.0
 
     private var measuring = false
 
-    protected var drawableRef: WeakReference<Drawable>? = WeakReference<Drawable>(imageDrawable)
+    interface IImageProvider {
+        fun requestImage(span: AztecDynamicImageSpan)
+    }
+
+    fun setDrawable(newDrawable: Drawable?) {
+        drawableRef = WeakReference<Drawable>(newDrawable)
+
+        originalBounds = Rect(getDrawable()?.bounds ?: Rect(0, 0, 0, 0))
+
+        setInitBounds(newDrawable)
+
+        computeAspectRatio(newDrawable)
+    }
+
+    init {
+        imageProvider.requestImage(this)
+        originalBounds = Rect(drawable?.bounds ?: Rect(0, 0, 0, 0))
+
+        computeAspectRatio(drawableRef.get())
+        setInitBounds(drawableRef.get())
+    }
 
     companion object {
         @JvmStatic protected fun setInitBounds(drawable: Drawable?) {
@@ -58,12 +81,6 @@ abstract class AztecDynamicImageSpan(val context: Context, imageDrawable: Drawab
         }
     }
 
-    init {
-        computeAspectRatio(drawableRef?.get())
-
-        setInitBounds(drawableRef?.get())
-    }
-
     fun computeAspectRatio(drawable: Drawable?) {
         if ((drawable?.intrinsicWidth ?: -1) > -1 && (drawable?.intrinsicHeight ?: -1) > -1) {
             aspectRatio = 1.0 * (drawable?.intrinsicWidth ?: 1) / (drawable?.intrinsicHeight ?: 1)
@@ -83,6 +100,9 @@ abstract class AztecDynamicImageSpan(val context: Context, imageDrawable: Drawab
 
             metrics.top = metrics.ascent
             metrics.bottom = 0
+        } else {
+            val dr = drawableRef
+            val d = dr.get()
         }
 
         return sizeRect.width()
@@ -174,11 +194,15 @@ abstract class AztecDynamicImageSpan(val context: Context, imageDrawable: Drawab
     }
 
     override fun getDrawable(): Drawable? {
-        return drawableRef?.get()
+        return drawableRef.get()
     }
 
     override fun draw(canvas: Canvas, text: CharSequence, start: Int, end: Int, x: Float, top: Int, y: Int, bottom: Int, paint: Paint) {
         canvas.save()
+
+        if (drawable == null) {
+            imageProvider.requestImage(this)
+        }
 
         if (getDrawable() != null) {
             var transY = top
@@ -188,6 +212,8 @@ abstract class AztecDynamicImageSpan(val context: Context, imageDrawable: Drawab
 
             canvas.translate(x, transY.toFloat())
             getDrawable()!!.draw(canvas)
+        } else {
+            val s = "a"
         }
 
         canvas.restore()

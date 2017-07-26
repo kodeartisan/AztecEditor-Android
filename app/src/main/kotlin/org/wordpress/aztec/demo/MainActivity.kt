@@ -37,6 +37,7 @@ import org.wordpress.aztec.plugins.wpcomments.WordPressCommentsPlugin
 import org.wordpress.aztec.plugins.wpcomments.toolbar.MoreToolbarButton
 import org.wordpress.aztec.plugins.wpcomments.toolbar.PageToolbarButton
 import org.wordpress.aztec.source.SourceViewEditText
+import org.wordpress.aztec.spans.AztecDynamicImageSpan
 import org.wordpress.aztec.toolbar.AztecToolbar
 import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
 import org.xml.sax.Attributes
@@ -218,13 +219,21 @@ class MainActivity : AppCompatActivity(),
 
     fun insertImageAndSimulateUpload(bitmap: Bitmap?, mediaPath: String) {
         val (id, attrs) = generateAttributesForMedia(mediaPath, isVideo = false)
-        aztec.visualEditor.insertImage(BitmapDrawable(resources, bitmap), attrs)
+        aztec.visualEditor.insertImage(object : AztecDynamicImageSpan.IImageProvider {
+            override fun requestImage(span: AztecDynamicImageSpan) {
+                span.drawable = BitmapDrawable(resources, bitmap)
+            }
+        }, attrs)
         insertMediaAndSimulateUpload(id, attrs)
     }
 
     fun insertVideoAndSimulateUpload(bitmap: Bitmap?, mediaPath: String) {
         val (id, attrs) = generateAttributesForMedia(mediaPath, isVideo = true)
-        aztec.visualEditor.insertVideo(BitmapDrawable(resources, bitmap), attrs)
+        aztec.visualEditor.insertVideo(object : AztecDynamicImageSpan.IImageProvider {
+            override fun requestImage(span: AztecDynamicImageSpan) {
+                span.drawable = BitmapDrawable(resources, bitmap)
+            }
+        }, attrs)
         insertMediaAndSimulateUpload(id, attrs)
     }
 
