@@ -3,18 +3,27 @@ package org.wordpress.aztec.plugins.shortcodes
 import android.text.Editable
 import android.text.Spannable
 import org.wordpress.aztec.AztecAttributes
+import org.wordpress.aztec.AztecText
 import org.wordpress.aztec.plugins.html2visual.IHtmlPreprocessor
 import org.wordpress.aztec.plugins.html2visual.IHtmlTagHandler
+import org.wordpress.aztec.plugins.shortcodes.handlers.CaptionHandler
 import org.wordpress.aztec.plugins.shortcodes.spans.CaptionShortcodeSpan
 import org.wordpress.aztec.plugins.visual2html.IHtmlPostprocessor
 import org.wordpress.aztec.util.SpanWrapper
 import org.wordpress.aztec.util.getLast
+import org.wordpress.aztec.watchers.BlockElementWatcher
 import org.xml.sax.Attributes
 
-class CaptionShortcodePlugin : IHtmlTagHandler, IHtmlPreprocessor, IHtmlPostprocessor {
+class CaptionShortcodePlugin(visualEditor: AztecText) : IHtmlTagHandler, IHtmlPreprocessor, IHtmlPostprocessor {
 
     // "captio" is used as tag name on purpose because "caption" gets eaten up by the Jsoup parser.
     private val TAG = "captio"
+
+    init {
+        BlockElementWatcher(visualEditor)
+                .add(CaptionHandler())
+                .install(visualEditor)
+    }
 
     override fun canHandleTag(tag: String): Boolean {
         return tag == TAG
