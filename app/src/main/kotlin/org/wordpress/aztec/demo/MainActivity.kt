@@ -330,7 +330,7 @@ class MainActivity : AppCompatActivity(),
             .addPlugin(WordPressCommentsPlugin(visualEditor))
             .addPlugin(MoreToolbarButton(visualEditor))
             .addPlugin(PageToolbarButton(visualEditor))
-            .addPlugin(CaptionShortcodePlugin())
+            .addPlugin(CaptionShortcodePlugin(visualEditor))
             .addPlugin(VideoShortcodePlugin())
             .addPlugin(AudioShortcodePlugin())
 
