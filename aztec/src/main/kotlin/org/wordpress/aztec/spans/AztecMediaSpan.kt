@@ -8,15 +8,25 @@ import android.graphics.drawable.Drawable
 import android.view.Gravity
 import org.wordpress.aztec.AztecAttributes
 import org.wordpress.aztec.AztecText
+import java.lang.ref.WeakReference
 import java.util.*
 
-abstract class AztecMediaSpan(context: Context, drawable: Drawable?, override var attributes: AztecAttributes = AztecAttributes(),
+abstract class AztecMediaSpan(context: Context, drawable: Drawable, override var attributes: AztecAttributes = AztecAttributes(),
                               var onMediaDeletedListener: AztecText.OnMediaDeletedListener? = null,
-                              editor: AztecText? = null) : AztecDynamicImageSpan(context, drawable), IAztecAttributedSpan {
+                              editor: AztecText? = null) : AztecDynamicImageSpan(context, drawable), IAztecAttributedSpan, IAztecFullWidthImageSpan {
 
     abstract val TAG: String
 
     private val overlays: ArrayList<Pair<Drawable?, Int>> = ArrayList()
+
+    private var weakImage: WeakReference<Drawable?>? = null
+
+    @Suppress("UNNECESSARY_SAFE_CALL")
+    override var imageDrawable: Drawable?
+        get() = weakImage?.get()
+        set(value) {
+            weakImage = WeakReference(value)
+        }
 
     init {
         textView = editor

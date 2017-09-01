@@ -1,6 +1,7 @@
 package org.wordpress.aztec.demo
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -26,6 +27,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.DisplayMetrics
 import android.view.*
 import android.widget.PopupMenu
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import org.wordpress.android.util.AppLog
@@ -303,6 +305,7 @@ class MainActivity : AppCompatActivity(),
         aztec.visualEditor.refreshText()
     }
 
+    @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -316,7 +319,15 @@ class MainActivity : AppCompatActivity(),
         val visualEditor = findViewById<AztecText>(R.id.aztec)
         val sourceEditor = findViewById<SourceViewEditText>(R.id.source)
         val toolbar = findViewById<AztecToolbar>(R.id.formatting_toolbar)
+        val scrollView = findViewById<ScrollView>(R.id.scrollView)
 
+        scrollView.setOnScrollChangeListener { _, _, _, _, _ -> visualEditor.onScrollChanged(scrollView.scrollY, scrollView.height) }
+        visualEditor.viewTreeObserver.addOnGlobalLayoutListener(object: ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                visualEditor.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                visualEditor.onScrollChanged(scrollView.scrollY, scrollView.height)
+            }
+        })
 
         aztec = Aztec.with(visualEditor, sourceEditor, toolbar, this)
             .setImageGetter(PicassoImageLoader(this, visualEditor))

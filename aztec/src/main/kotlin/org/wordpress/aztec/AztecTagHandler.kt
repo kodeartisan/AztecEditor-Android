@@ -77,7 +77,7 @@ class AztecTagHandler(val plugins: List<IAztecPlugin> = ArrayList()) : Html.TagH
                 return true
             }
             IMAGE -> {
-                handleMediaElement(opening, output, AztecImageSpan(context, getLoadingDrawable(context), AztecAttributes(attributes)))
+                handleMediaElement(opening, output, AztecImageSpan(context, getLoadingDrawable(context), nestingLevel, AztecAttributes(attributes)))
                 return true
             }
             VIDEO -> {
@@ -130,7 +130,7 @@ class AztecTagHandler(val plugins: List<IAztecPlugin> = ArrayList()) : Html.TagH
         return false
     }
 
-    private fun getLoadingDrawable(context: Context): Drawable? {
+    private fun getLoadingDrawable(context: Context): Drawable {
         val styles = context.obtainStyledAttributes(R.styleable.AztecText)
         val loadingDrawable = ContextCompat.getDrawable(context, styles.getResourceId(R.styleable.AztecText_drawableLoading, R.drawable.ic_image_loading))
         styles.recycle()

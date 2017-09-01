@@ -111,7 +111,7 @@ class LineBlockFormatter(editor: AztecText) : AztecFormatter(editor) {
         )
     }
 
-    fun insertVideo(drawable: Drawable?, attributes: Attributes, onVideoTappedListener: OnVideoTappedListener?,
+    fun insertVideo(drawable: Drawable, attributes: Attributes, onVideoTappedListener: OnVideoTappedListener?,
                     onMediaDeletedListener: AztecText.OnMediaDeletedListener?) {
         val nestingLevel = IAztecNestable.getNestingLevelAt(editableText, selectionStart)
         val span = AztecVideoSpan(editor.context, drawable, nestingLevel, AztecAttributes(attributes), onVideoTappedListener,
@@ -119,9 +119,10 @@ class LineBlockFormatter(editor: AztecText) : AztecFormatter(editor) {
         insertMedia(span)
     }
 
-    fun insertImage(drawable: Drawable?, attributes: Attributes, onImageTappedListener: OnImageTappedListener?,
+    fun insertImage(drawable: Drawable, attributes: Attributes, onImageTappedListener: OnImageTappedListener?,
                     onMediaDeletedListener: AztecText.OnMediaDeletedListener?) {
-        val span = AztecImageSpan(editor.context, drawable, AztecAttributes(attributes), onImageTappedListener,
+        val nestingLevel = IAztecNestable.getNestingLevelAt(editableText, selectionStart)
+        val span = AztecImageSpan(editor.context, drawable, nestingLevel, AztecAttributes(attributes), onImageTappedListener,
                 onMediaDeletedListener, editor)
         insertMedia(span)
     }

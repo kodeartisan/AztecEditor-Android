@@ -5,7 +5,7 @@ import android.graphics.drawable.Drawable
 import org.wordpress.aztec.AztecAttributes
 import org.wordpress.aztec.AztecText
 
-class AztecImageSpan(context: Context, drawable: Drawable?, attributes: AztecAttributes = AztecAttributes(),
+class AztecImageSpan(context: Context, drawable: Drawable, override var nestingLevel: Int, attributes: AztecAttributes = AztecAttributes(),
                      var onImageTappedListener: AztecText.OnImageTappedListener? = null,
                      onMediaDeletedListener: AztecText.OnMediaDeletedListener? = null,
                      editor: AztecText? = null) :

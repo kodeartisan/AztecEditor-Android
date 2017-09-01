@@ -7,7 +7,7 @@ import android.view.Gravity
 import org.wordpress.aztec.AztecAttributes
 import org.wordpress.aztec.AztecText
 
-class AztecAudioSpan(context: Context, drawable: Drawable?, override var nestingLevel: Int,
+class AztecAudioSpan(context: Context, drawable: Drawable, override var nestingLevel: Int,
                      attributes: AztecAttributes = AztecAttributes(),
                      var onAudioTappedListener: AztecText.OnAudioTappedListener? = null,
                      onMediaDeletedListener: AztecText.OnMediaDeletedListener? = null,

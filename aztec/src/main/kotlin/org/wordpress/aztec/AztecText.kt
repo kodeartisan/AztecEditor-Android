@@ -22,19 +22,19 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.StateListDrawable
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
 import android.support.v4.content.ContextCompat
+import android.support.v4.util.ArrayMap
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.AppCompatAutoCompleteTextView
 import android.text.*
 import android.text.style.SuggestionSpan
 import android.util.AttributeSet
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.WindowManager
+import android.util.Log
+import android.view.*
 import android.view.inputmethod.BaseInputConnection
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
@@ -120,6 +120,9 @@ class AztecText : AppCompatAutoCompleteTextView, TextWatcher, UnknownHtmlSpan.On
     lateinit var blockFormatter: BlockFormatter
     lateinit var lineBlockFormatter: LineBlockFormatter
     lateinit var linkFormatter: LinkFormatter
+
+    private var firstVisibleLineNumber = 0
+    private var lastVisibleLineNumber = 0
 
     var imageGetter: Html.ImageGetter? = null
     var videoThumbnailGetter: Html.VideoThumbnailGetter? = null
@@ -257,6 +260,26 @@ class AztecText : AppCompatAutoCompleteTextView, TextWatcher, UnknownHtmlSpan.On
         enableTextChangedListener()
 
         isViewInitialized = true
+    }
+
+    private fun updateVisibleLines(scrollY: Int, height: Int) {
+        firstVisibleLineNumber = layout?.getLineForVertical(scrollY) ?: 0
+        lastVisibleLineNumber = layout?.getLineForVertical(height + scrollY) ?: 0
+    }
+
+    var last = System.currentTimeMillis()
+    val run = Runnable {
+        if (System.currentTimeMillis() - last > 1000)
+            loadImages()
+    }
+
+    public fun onScrollChanged(scrollY: Int, height: Int) {
+        updateVisibleLines(scrollY, height)
+        if (System.currentTimeMillis() - last < 1000) {
+            postDelayed(run, 1000)
+        }
+        last = System.currentTimeMillis()
+//        loadVideos()
     }
 
     private fun handleBackspace(event: KeyEvent): Boolean {
@@ -746,35 +769,66 @@ class AztecText : AppCompatAutoCompleteTextView, TextWatcher, UnknownHtmlSpan.On
         loadVideos()
     }
 
+    val visibleImages = ArrayMap<Int, Pair<AztecMediaSpan, Drawable?>>()
     private fun loadImages() {
         val spans = this.text.getSpans(0, text.length, AztecImageSpan::class.java)
         spans.forEach {
-            val callbacks = object : Html.ImageGetter.Callbacks {
 
-                override fun onImageFailed() {
-                    replaceImage(ContextCompat.getDrawable(context, drawableFailed))
+            val line = layout?.getLineForOffset(text.getSpanStart(it)) ?: - 1
+            if (it.imageDrawable == null && line <= lastVisibleLineNumber && line >= firstVisibleLineNumber) {
+                val callbacks = object : Html.ImageGetter.Callbacks {
+
+                    override fun onImageFailed() {
+                        replaceImage(ContextCompat.getDrawable(context, drawableFailed))
+                    }
+
+                    override fun onImageLoaded(drawable: Drawable?) {
+                        if (it.drawable != drawable) {Log.d("IMAGE", "Loaded $line")}
+                        replaceImage(drawable)
+                    }
+
+                    override fun onImageLoading(drawable: Drawable?) {
+                        replaceImage(drawable ?: ContextCompat.getDrawable(context, drawableLoading))
+                    }
+
+                    private fun replaceImage(drawable: Drawable?) {
+                        if (it.drawable != drawable) {
+                            post {
+                                visibleImages[line] = Pair(it, drawable)
+
+                                it.drawable = drawable
+                                refreshText()
+                            }
+                        }
+                    }
                 }
 
-                override fun onImageLoaded(drawable: Drawable?) {
-                    replaceImage(drawable)
-                }
+                // maxidth set to the biggest of screen width/height to cater for device rotation
+                val maxWidth = Math.max(context.resources.displayMetrics.widthPixels,
+                        context.resources.displayMetrics.heightPixels)
+                imageGetter?.loadImage(it.getSource(), callbacks, maxWidth)
 
-                override fun onImageLoading(drawable: Drawable?) {
-                    replaceImage(drawable ?: ContextCompat.getDrawable(context, drawableLoading))
-                }
+            }
+        }
 
-                private fun replaceImage(drawable: Drawable?) {
-                    it.drawable = drawable
-                    post {
-                        refreshText()
+        releaseInvisibleImages()
+    }
+
+    private fun releaseInvisibleImages() {
+        post {
+            val iterator = visibleImages.keys.iterator()
+            while (iterator.hasNext()) {
+                val line = iterator.next()
+                if (line != null) {
+                    if (line > lastVisibleLineNumber || line < firstVisibleLineNumber) {
+                        val d = ContextCompat.getDrawable(context, drawableLoading)
+                        d.bounds = visibleImages[line]?.second?.bounds
+                        visibleImages[line]?.first?.imageDrawable = d
+                        visibleImages.remove(line)
+                        Log.d("IMAGE", "Release $line")
                     }
                 }
             }
-
-            // maxidth set to the biggest of screen width/height to cater for device rotation
-            val maxWidth = Math.max(context.resources.displayMetrics.widthPixels,
-                    context.resources.displayMetrics.heightPixels)
-            imageGetter?.loadImage(it.getSource(), callbacks, maxWidth)
         }
     }
 
@@ -782,30 +836,37 @@ class AztecText : AppCompatAutoCompleteTextView, TextWatcher, UnknownHtmlSpan.On
         val spans = this.text.getSpans(0, text.length, AztecVideoSpan::class.java)
 
         spans.forEach {
-            val callbacks = object : Html.VideoThumbnailGetter.Callbacks {
+            val line = layout?.getLineForOffset(text.getSpanStart(it)) ?: - 1
+            if (it.imageDrawable == null && line <= lastVisibleLineNumber && line >= firstVisibleLineNumber) {
+                val callbacks = object : Html.VideoThumbnailGetter.Callbacks {
 
-                override fun onThumbnailFailed() {
-                    replaceImage(ContextCompat.getDrawable(context, drawableFailed))
-                }
+                    override fun onThumbnailFailed() {
+                        replaceImage(ContextCompat.getDrawable(context, drawableFailed))
+                    }
 
-                override fun onThumbnailLoaded(drawable: Drawable?) {
-                    replaceImage(drawable)
-                }
+                    override fun onThumbnailLoaded(drawable: Drawable?) {
+                        replaceImage(drawable)
+                    }
 
-                override fun onThumbnailLoading(drawable: Drawable?) {
-                    replaceImage(drawable ?: ContextCompat.getDrawable(context, drawableLoading))
-                }
+                    override fun onThumbnailLoading(drawable: Drawable?) {
+                        replaceImage(drawable ?: ContextCompat.getDrawable(context, drawableLoading))
+                    }
 
-                private fun replaceImage(drawable: Drawable?) {
-                    it.drawable = drawable
-                    post {
-                        refreshText()
+                    private fun replaceImage(drawable: Drawable?) {
+                        post {
+                            visibleImages[line] = Pair(it, drawable)
+                            it.drawable = drawable
+
+                            refreshText()
+                        }
                     }
                 }
-            }
 
-            videoThumbnailGetter?.loadVideoThumbnail(it.getSource(), callbacks, context.resources.displayMetrics.widthPixels)
+                videoThumbnailGetter?.loadVideoThumbnail(it.getSource(), callbacks, context.resources.displayMetrics.widthPixels)
+            }
         }
+
+        releaseInvisibleImages()
     }
 
     //returns regular or "calypso" html depending on the mode
@@ -916,6 +977,7 @@ class AztecText : AppCompatAutoCompleteTextView, TextWatcher, UnknownHtmlSpan.On
 
 
     fun refreshText() {
+        Log.d("IMAGE", "REFRESH")
         disableTextChangedListener()
         val selStart = selectionStart
         val selEnd = selectionEnd
@@ -1205,11 +1267,11 @@ class AztecText : AppCompatAutoCompleteTextView, TextWatcher, UnknownHtmlSpan.On
         onSelectionChanged(0, 0)
     }
 
-    fun insertImage(drawable: Drawable?, attributes: Attributes) {
+    fun insertImage(drawable: Drawable, attributes: Attributes) {
         lineBlockFormatter.insertImage(drawable, attributes, onImageTappedListener, onMediaDeletedListener)
     }
 
-    fun insertVideo(drawable: Drawable?, attributes: Attributes) {
+    fun insertVideo(drawable: Drawable, attributes: Attributes) {
         lineBlockFormatter.insertVideo(drawable, attributes, onVideoTappedListener, onMediaDeletedListener)
     }
 

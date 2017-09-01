@@ -10,8 +10,9 @@ import android.text.Layout
 import android.text.style.DynamicDrawableSpan
 import android.view.View
 import org.wordpress.aztec.AztecText
+import java.lang.ref.WeakReference
 
-abstract class AztecDynamicImageSpan(val context: Context, protected var imageDrawable: Drawable?) : DynamicDrawableSpan() {
+abstract class AztecDynamicImageSpan(val context: Context, open var imageDrawable: Drawable?) : DynamicDrawableSpan() {
 
     var textView: AztecText? = null
     var originalBounds = Rect(imageDrawable?.bounds ?: Rect(0, 0, 0, 0))
@@ -64,7 +65,7 @@ abstract class AztecDynamicImageSpan(val context: Context, protected var imageDr
     fun computeAspectRatio() {
         if ((imageDrawable?.intrinsicWidth ?: -1) > -1 && (imageDrawable?.intrinsicHeight ?: -1) > -1) {
             aspectRatio = 1.0 * (imageDrawable?.intrinsicWidth ?: 1) / (imageDrawable?.intrinsicHeight ?: 1)
-        } else if (!(imageDrawable?.bounds?.isEmpty ?: true)) {
+        } else if (imageDrawable?.bounds?.isEmpty == false) {
             aspectRatio = 1.0 * (imageDrawable?.bounds?.width() ?: 0) / (imageDrawable?.bounds?.height() ?: 1)
         } else {
             aspectRatio = 1.0
