@@ -112,10 +112,16 @@ object Format {
         // Pretty it up for the source editor
         val blocklist = "blockquote|ul|ol|li|table|thead|tbody|tfoot|tr|th|td|h[1-6]|fieldset|div|p"
 
+        // Remove <p> and <br />
+        content = replaceAll(content, "(?i)\\s*<p>", "")
+        content = replaceAll(content, "(?i)\\s*</p>\\s*", "\n\n")
+        content = replaceAll(content, "\\n[\\s\\u00a0]+\\n", "\n\n")
+        content = replaceAll(content, "(?i)\\s*<br ?/?>\\s*", "\n")
+
         content = replaceAll(content, "\\s*</($blocklist)>\\s*", "</$1>\n")
         content = replaceAll(content, "\\s*<((?:$blocklist)(?: [^>]*)?)>", "\n<$1>")
 
-        content = replaceAll(content, "\\s*<(!--.*?--|hr)>\\s*", "\n\n<$1>\n\n")
+        content = replaceAll(content, "\\s*<(!--.*?--|hr)>\\s*", "\n<$1>\n")
 
         // Mark </p> if it has any attributes.
         content = replaceAll(content, "(<p [^>]+>.*?)</p>", "$1</p#>")
@@ -123,16 +129,12 @@ object Format {
         // Separate <div> containing <p>
         content = replaceAll(content, "(?i)<div( [^>]*)?>\\s*<p>", "<div$1>\n\n")
 
-        // Remove <p> and <br />
-        content = replaceAll(content, "(?i)\\s*<p>", "")
-        content = replaceAll(content, "(?i)\\s*</p>\\s*", "\n\n")
-        content = replaceAll(content, "\\n[\\s\\u00a0]+\\n", "\n\n")
-        content = replaceAll(content, "(?i)\\s*<br ?/?>\\s*", "\n")
-
         // Fix some block element newline issues
         content = replaceAll(content, "\n\n<div", "\n<div")
         content = replaceAll(content, "</div>\n\n", "</div>\n")
-        content = replaceAll(content, "(?i)\\s*\\[caption([^\\[]+)\\[/caption\\]\\s*", "\n\n[caption$1[/caption]\n\n")
+        content = replaceAll(content, "\n\n<span", "\n<span")
+        content = replaceAll(content, "</span>\n\n", "</span>\n")
+        content = replaceAll(content, "(?i)\\s*\\[caption([^\\[]+)\\[/caption\\]\\s*", "\n\n[caption$1[/caption]\n")
         content = replaceAll(content, "caption\\]\\n\\n+\\[caption", "caption]\n\n[caption")
 
         content = replaceAll(content, "<li([^>]*)>", "\t<li$1>")
@@ -256,11 +258,8 @@ object Format {
         }
 
         html = replaceAll(html, "(?i)<br ?/?>\\s*<br ?/?>", "\n\n")
-        html = replaceAll(html, "(?i)(<(?:$blocklist)(?: [^>]*)?>)", "\n$1")
-        html = replaceAll(html, "(?i)(</(?:$blocklist)>)", "$1\n\n")
 
-        html = replaceAll(html, "(?i)(<!--(.*?)-->)", "\n$1\n\n")
-        html = replaceAll(html, "(?i)<hr ?/?>", "<hr>\n\n") // hr is self closing block element
+        html = replaceAll(html, "(?i)<hr ?/?>", "<hr>\n") // hr is self closing block element
 
         html = replaceAll(html, "(?i)\\s*<option", "<option") // No <p> or <br> around <option>
         html = replaceAll(html, "(?i)</option>\\s*", "</option>")
