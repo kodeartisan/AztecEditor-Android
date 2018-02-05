@@ -1389,6 +1389,7 @@ class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknownHtmlT
 
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_block_editor, null)
         val source = dialogView.findViewById<SourceViewEditText>(R.id.source)
+        source.setCalypsoMode(isInCalypsoMode)
 
         var editHtml = html
         if (TextUtils.isEmpty(editHtml)) {
