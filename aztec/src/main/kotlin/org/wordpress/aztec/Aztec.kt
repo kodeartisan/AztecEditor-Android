@@ -10,7 +10,7 @@ import org.wordpress.aztec.toolbar.AztecToolbar
 import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
 import java.util.ArrayList
 
-open class Aztec private constructor(val visualEditor: AztecText, val toolbar: AztecToolbar,
+open class Aztec constructor(val visualEditor: AztecText, val toolbar: AztecToolbar,
                                      private val toolbarClickListener: IAztecToolbarClickListener) {
     private var imageGetter: Html.ImageGetter? = null
     private var videoThumbnailGetter: Html.VideoThumbnailGetter? = null
@@ -29,17 +29,17 @@ open class Aztec private constructor(val visualEditor: AztecText, val toolbar: A
         initToolbar()
     }
 
-    private constructor(activity: Activity, @IdRes aztecTextId: Int,
+    constructor(activity: Activity, @IdRes aztecTextId: Int,
                 @IdRes sourceTextId: Int, @IdRes toolbarId: Int,
                 toolbarClickListener: IAztecToolbarClickListener) : this(activity.findViewById<AztecText>(aztecTextId),
             activity.findViewById<SourceViewEditText>(sourceTextId), activity.findViewById<AztecToolbar>(toolbarId), toolbarClickListener)
 
-    private constructor(activity: Activity, @IdRes aztecTextId: Int,
+    constructor(activity: Activity, @IdRes aztecTextId: Int,
                 @IdRes toolbarId: Int,
                 toolbarClickListener: IAztecToolbarClickListener) : this(activity.findViewById<AztecText>(aztecTextId),
             activity.findViewById<AztecToolbar>(toolbarId), toolbarClickListener)
 
-    private constructor(visualEditor: AztecText, sourceEditor: SourceViewEditText,
+    constructor(visualEditor: AztecText, sourceEditor: SourceViewEditText,
                 toolbar: AztecToolbar, toolbarClickListener: IAztecToolbarClickListener) : this(visualEditor, toolbar, toolbarClickListener) {
         this.sourceEditor = sourceEditor
 
