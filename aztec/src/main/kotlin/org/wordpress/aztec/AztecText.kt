@@ -210,7 +210,7 @@ open class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknown
     var imageGetter: Html.ImageGetter? = null
     var videoThumbnailGetter: Html.VideoThumbnailGetter? = null
 
-    var plugins: ArrayList<IAztecPlugin> = ArrayList()
+    open var plugins: ArrayList<IAztecPlugin> = ArrayList()
 
     var widthMeasureSpec: Int = 0
 
