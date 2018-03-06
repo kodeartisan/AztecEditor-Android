@@ -34,7 +34,6 @@ import android.support.annotation.DrawableRes
 import android.support.graphics.drawable.VectorDrawableCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
-import android.support.v7.widget.AppCompatEditText
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
@@ -52,6 +51,7 @@ import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.BaseInputConnection
 import android.widget.EditText
+import android.widget.MultiAutoCompleteTextView
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.ImageUtils
 import org.wordpress.aztec.formatting.BlockFormatter
@@ -113,7 +113,7 @@ import java.util.Arrays
 import java.util.LinkedList
 
 @Suppress("UNUSED_PARAMETER")
-class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknownHtmlTappedListener, IEventInjector {
+open class AztecText : MultiAutoCompleteTextView, TextWatcher, UnknownHtmlSpan.OnUnknownHtmlTappedListener, IEventInjector {
     companion object {
         val BLOCK_EDITOR_HTML_KEY = "RETAINED_BLOCK_HTML_KEY"
         val BLOCK_EDITOR_START_INDEX_KEY = "BLOCK_EDITOR_START_INDEX_KEY"
