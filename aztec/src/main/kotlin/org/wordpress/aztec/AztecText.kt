@@ -56,6 +56,7 @@ import android.widget.EditText
 import android.widget.Toast
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.ImageUtils
+import org.wordpress.android.util.ToastUtils
 import org.wordpress.aztec.formatting.BlockFormatter
 import org.wordpress.aztec.formatting.InlineFormatter
 import org.wordpress.aztec.formatting.LineBlockFormatter
@@ -274,6 +275,8 @@ open class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknown
     @SuppressLint("ResourceType")
     private fun init(attrs: AttributeSet?) {
         disableTextChangedListener()
+
+        ToastUtils.showToast(context, "Aztec init")
 
         val styles = context.obtainStyledAttributes(attrs, R.styleable.AztecText, 0, R.style.AztecTextStyle)
         setLineSpacing(
