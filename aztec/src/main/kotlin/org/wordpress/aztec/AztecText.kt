@@ -117,6 +117,7 @@ import java.util.LinkedList
 @Suppress("UNUSED_PARAMETER")
 open class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknownHtmlTappedListener, IEventInjector {
     companion object {
+        val CHANGE_TEST_KEY = "CHANGE_TEST_KEY"
         val BLOCK_EDITOR_HTML_KEY = "RETAINED_BLOCK_HTML_KEY"
         val BLOCK_EDITOR_START_INDEX_KEY = "BLOCK_EDITOR_START_INDEX_KEY"
         val BLOCK_DIALOG_VISIBLE_KEY = "BLOCK_DIALOG_VISIBLE_KEY"
@@ -566,6 +567,7 @@ open class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknown
         val superState = super.onSaveInstanceState()
         val savedState = SavedState(superState)
         val bundle = Bundle()
+        bundle.putBoolean(CHANGE_TEST_KEY, true)
 //        bundle.putStringArrayList(HISTORY_LIST_KEY, ArrayList<String>(history.historyList))
         bundle.putInt(HISTORY_CURSOR_KEY, history.historyCursor)
         bundle.putString(INPUT_LAST_KEY, history.inputLast)
