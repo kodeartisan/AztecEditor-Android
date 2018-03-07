@@ -46,6 +46,7 @@ import android.text.TextWatcher
 import android.text.style.SuggestionSpan
 import android.util.AttributeSet
 import android.util.DisplayMetrics
+import android.util.SparseArray
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -594,6 +595,10 @@ open class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknown
 
         savedState.state = bundle
         return savedState
+    }
+
+    override fun dispatchSaveInstanceState(container: SparseArray<Parcelable>?) {
+//        super.dispatchSaveInstanceState(container)
     }
 
     internal class SavedState : BaseSavedState {
