@@ -113,7 +113,7 @@ import java.util.Arrays
 import java.util.LinkedList
 
 @Suppress("UNUSED_PARAMETER")
-class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknownHtmlTappedListener, IEventInjector {
+open class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknownHtmlTappedListener, IEventInjector {
     companion object {
         val BLOCK_EDITOR_HTML_KEY = "RETAINED_BLOCK_HTML_KEY"
         val BLOCK_EDITOR_START_INDEX_KEY = "BLOCK_EDITOR_START_INDEX_KEY"
@@ -564,11 +564,11 @@ class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknownHtmlT
         val superState = super.onSaveInstanceState()
         val savedState = SavedState(superState)
         val bundle = Bundle()
-        bundle.putStringArrayList(HISTORY_LIST_KEY, ArrayList<String>(history.historyList))
+//        bundle.putStringArrayList(HISTORY_LIST_KEY, ArrayList<String>(history.historyList))
         bundle.putInt(HISTORY_CURSOR_KEY, history.historyCursor)
         bundle.putString(INPUT_LAST_KEY, history.inputLast)
         bundle.putInt(VISIBILITY_KEY, visibility)
-        bundle.putString(RETAINED_HTML_KEY, toHtml(false))
+//        bundle.putString(RETAINED_HTML_KEY, toHtml(false))
         bundle.putInt(SELECTION_START_KEY, selectionStart)
         bundle.putInt(SELECTION_END_KEY, selectionEnd)
 
@@ -587,7 +587,7 @@ class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknownHtmlT
 
             bundle.putBoolean(BLOCK_DIALOG_VISIBLE_KEY, true)
             bundle.putInt(BLOCK_EDITOR_START_INDEX_KEY, unknownBlockSpanStart)
-            bundle.putString(BLOCK_EDITOR_HTML_KEY, source?.getPureHtml(false))
+//            bundle.putString(BLOCK_EDITOR_HTML_KEY, source?.getPureHtml(false))
         }
 
         bundle.putBoolean(IS_MEDIA_ADDED_KEY, isMediaAdded)
