@@ -53,6 +53,7 @@ import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.BaseInputConnection
 import android.widget.EditText
+import android.widget.Toast
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.ImageUtils
 import org.wordpress.aztec.formatting.BlockFormatter
@@ -598,6 +599,7 @@ open class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknown
     }
 
     override fun dispatchSaveInstanceState(container: SparseArray<Parcelable>?) {
+        Toast.makeText(context, "Avoiding hierarchy state save", Toast.LENGTH_SHORT).show()
 //        super.dispatchSaveInstanceState(container)
     }
 
