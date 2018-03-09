@@ -53,7 +53,6 @@ import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.BaseInputConnection
 import android.widget.EditText
-import android.widget.Toast
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.ImageUtils
 import org.wordpress.android.util.ToastUtils
@@ -111,6 +110,11 @@ import org.wordpress.aztec.watchers.event.text.BeforeTextChangedEventData
 import org.wordpress.aztec.watchers.event.text.OnTextChangedEventData
 import org.wordpress.aztec.watchers.event.text.TextWatcherEvent
 import org.xml.sax.Attributes
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
 import java.util.ArrayList
 import java.util.Arrays
 import java.util.LinkedList
@@ -521,18 +525,30 @@ open class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknown
         val savedState = state as SavedState
         super.onRestoreInstanceState(savedState.superState)
         val customState = savedState.state
-        val array = ArrayList(customState.getStringArrayList(HISTORY_LIST_KEY))
         val list = LinkedList<String>()
 
-        list += array
+        if (bigPersist) {
+            readAndPurgeTempInstance<ArrayList<String>>(HISTORY_LIST_KEY, null)?.let { list += it }
+        } else {
+            list += ArrayList(customState.getStringArrayList(HISTORY_LIST_KEY))
+        }
 
         history.historyList = list
         history.historyCursor = customState.getInt(HISTORY_CURSOR_KEY)
-        history.inputLast = customState.getString(INPUT_LAST_KEY)
+
+        if (bigPersist) {
+            readAndPurgeTempInstance<String>(INPUT_LAST_KEY, "")?.let { history.inputLast = it }
+        } else {
+            history.inputLast = customState.getString(INPUT_LAST_KEY)
+        }
+
         visibility = customState.getInt(VISIBILITY_KEY)
 
-        val retainedHtml = customState.getString(RETAINED_HTML_KEY)
-        fromHtml(retainedHtml)
+        if (bigPersist) {
+            readAndPurgeTempInstance<String>(RETAINED_HTML_KEY, "")?.let { fromHtml(it) }
+        } else {
+            fromHtml(customState.getString(RETAINED_HTML_KEY))
+        }
 
         val retainedSelectionStart = customState.getInt(SELECTION_START_KEY)
         val retainedSelectionEnd = customState.getInt(SELECTION_END_KEY)
@@ -555,26 +571,82 @@ open class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknown
             if (retainedBlockHtmlIndex != -1) {
                 val unknownSpan = text.getSpans(retainedBlockHtmlIndex, retainedBlockHtmlIndex + 1, UnknownHtmlSpan::class.java).firstOrNull()
                 if (unknownSpan != null) {
-                    val retainedBlockHtml = customState.getString(BLOCK_EDITOR_HTML_KEY)
-                    showBlockEditorDialog(unknownSpan, retainedBlockHtml)
+                    if (bigPersist) {
+                        readAndPurgeTempInstance<String>(BLOCK_EDITOR_HTML_KEY, "")?.let {
+                            showBlockEditorDialog(unknownSpan, it)
+                        }
+                    } else {
+                        showBlockEditorDialog(unknownSpan, customState.getString(BLOCK_EDITOR_HTML_KEY))
+                    }
                 }
             }
         }
 
         isMediaAdded = customState.getBoolean(IS_MEDIA_ADDED_KEY)
 
+        if (bigPersist) {
+            context.getSharedPreferences("instanceData", Context.MODE_PRIVATE).edit().clear().apply()
+        }
+
         enableTextChangedListener()
+    }
+
+    var bigPersist = true
+
+    private fun writeTempInstance(filename: String, obj: Any?) {
+        with(File.createTempFile(filename, ".inst", context.getCacheDir())) {
+            deleteOnExit() // just make sure the file gets deleted if we don't do it ourselves
+            with(File(context.getCacheDir(), "$filename.inst")) {
+                if (this.exists()) {
+                    this.createNewFile()
+                }
+
+                with(FileOutputStream(this)) {
+                    with(ObjectOutputStream(this)) {
+                        writeObject(obj)
+                        close()
+                    }
+                    close()
+                }
+            }
+        }
+    }
+
+    private fun <T> readAndPurgeTempInstance(filename: String, defaultValue: T?): T? {
+        var obj: T? = defaultValue
+
+        with(File(context.getCacheDir(), "$filename.inst")) {
+            with(FileInputStream(this)) {
+                with(ObjectInputStream(this)) {
+                    @Suppress("UNCHECKED_CAST")
+                    obj = readObject() as T?
+                    close()
+                }
+            }
+            delete() // delete the file, no longer needed
+        }
+
+        return obj
     }
 
     override fun onSaveInstanceState(): Parcelable {
         val superState = super.onSaveInstanceState()
         val savedState = SavedState(superState)
         val bundle = Bundle()
-        bundle.putStringArrayList(HISTORY_LIST_KEY, ArrayList<String>(history.historyList))
+
+        if (bigPersist) writeTempInstance(HISTORY_LIST_KEY,  ArrayList<String>(history.historyList))
+        else bundle.putStringArrayList(HISTORY_LIST_KEY, ArrayList<String>(history.historyList))
+
         bundle.putInt(HISTORY_CURSOR_KEY, history.historyCursor)
-        bundle.putString(INPUT_LAST_KEY, history.inputLast)
+
+        if (bigPersist) writeTempInstance(INPUT_LAST_KEY, history.inputLast)
+        else bundle.putString(INPUT_LAST_KEY, history.inputLast)
+
         bundle.putInt(VISIBILITY_KEY, visibility)
-        bundle.putString(RETAINED_HTML_KEY, toHtml(false))
+
+        if (bigPersist) writeTempInstance(RETAINED_HTML_KEY, toHtml(false))
+        else bundle.putString(RETAINED_HTML_KEY, toHtml(false))
+
         bundle.putInt(SELECTION_START_KEY, selectionStart)
         bundle.putInt(SELECTION_END_KEY, selectionEnd)
 
@@ -593,7 +665,9 @@ open class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknown
 
             bundle.putBoolean(BLOCK_DIALOG_VISIBLE_KEY, true)
             bundle.putInt(BLOCK_EDITOR_START_INDEX_KEY, unknownBlockSpanStart)
-            bundle.putString(BLOCK_EDITOR_HTML_KEY, source?.getPureHtml(false))
+
+            if (bigPersist) writeTempInstance(BLOCK_EDITOR_HTML_KEY, source?.getPureHtml(false))
+            else bundle.putString(BLOCK_EDITOR_HTML_KEY, source?.getPureHtml(false))
         }
 
         bundle.putBoolean(IS_MEDIA_ADDED_KEY, isMediaAdded)
@@ -603,8 +677,7 @@ open class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknown
     }
 
     override fun dispatchSaveInstanceState(container: SparseArray<Parcelable>?) {
-        Toast.makeText(context, "Avoiding hierarchy state save", Toast.LENGTH_SHORT).show()
-//        super.dispatchSaveInstanceState(container)
+        super.dispatchSaveInstanceState(container)
     }
 
     internal class SavedState : BaseSavedState {
