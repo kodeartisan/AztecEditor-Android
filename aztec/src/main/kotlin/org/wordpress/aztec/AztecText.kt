@@ -570,12 +570,11 @@ open class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknown
         val superState = super.onSaveInstanceState()
         val savedState = SavedState(superState)
         val bundle = Bundle()
-        bundle.putBoolean(CHANGE_TEST_KEY, true)
-//        bundle.putStringArrayList(HISTORY_LIST_KEY, ArrayList<String>(history.historyList))
+        bundle.putStringArrayList(HISTORY_LIST_KEY, ArrayList<String>(history.historyList))
         bundle.putInt(HISTORY_CURSOR_KEY, history.historyCursor)
         bundle.putString(INPUT_LAST_KEY, history.inputLast)
         bundle.putInt(VISIBILITY_KEY, visibility)
-//        bundle.putString(RETAINED_HTML_KEY, toHtml(false))
+        bundle.putString(RETAINED_HTML_KEY, toHtml(false))
         bundle.putInt(SELECTION_START_KEY, selectionStart)
         bundle.putInt(SELECTION_END_KEY, selectionEnd)
 
@@ -594,7 +593,7 @@ open class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknown
 
             bundle.putBoolean(BLOCK_DIALOG_VISIBLE_KEY, true)
             bundle.putInt(BLOCK_EDITOR_START_INDEX_KEY, unknownBlockSpanStart)
-//            bundle.putString(BLOCK_EDITOR_HTML_KEY, source?.getPureHtml(false))
+            bundle.putString(BLOCK_EDITOR_HTML_KEY, source?.getPureHtml(false))
         }
 
         bundle.putBoolean(IS_MEDIA_ADDED_KEY, isMediaAdded)
