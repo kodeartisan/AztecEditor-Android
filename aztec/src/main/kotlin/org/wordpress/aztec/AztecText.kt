@@ -520,15 +520,18 @@ class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknownHtmlT
         val savedState = state as SavedState
         super.onRestoreInstanceState(savedState.superState)
         val customState = savedState.state
+        val array = readAndPurgeTempInstance<ArrayList<String>>(HISTORY_LIST_KEY, ArrayList<String>())
         val list = LinkedList<String>()
-        readAndPurgeTempInstance<ArrayList<String>>(HISTORY_LIST_KEY, null)?.let { list += it }
+
+        list += array
 
         history.historyList = list
         history.historyCursor = customState.getInt(HISTORY_CURSOR_KEY)
-        readAndPurgeTempInstance<String>(INPUT_LAST_KEY, "")?.let { history.inputLast = it }
+        history.inputLast = readAndPurgeTempInstance<String>(INPUT_LAST_KEY, "")
         visibility = customState.getInt(VISIBILITY_KEY)
 
-        readAndPurgeTempInstance<String>(RETAINED_HTML_KEY, "")?.let { fromHtml(it) }
+        val retainedHtml = readAndPurgeTempInstance<String>(RETAINED_HTML_KEY, "")
+        fromHtml(retainedHtml)
 
         val retainedSelectionStart = customState.getInt(SELECTION_START_KEY)
         val retainedSelectionEnd = customState.getInt(SELECTION_END_KEY)
@@ -551,9 +554,8 @@ class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknownHtmlT
             if (retainedBlockHtmlIndex != -1) {
                 val unknownSpan = text.getSpans(retainedBlockHtmlIndex, retainedBlockHtmlIndex + 1, UnknownHtmlSpan::class.java).firstOrNull()
                 if (unknownSpan != null) {
-                    readAndPurgeTempInstance<String>(BLOCK_EDITOR_HTML_KEY, "")?.let {
-                        showBlockEditorDialog(unknownSpan, it)
-                    }
+                    val retainedBlockHtml = readAndPurgeTempInstance<String>(BLOCK_EDITOR_HTML_KEY, "")
+                    showBlockEditorDialog(unknownSpan, retainedBlockHtml)
                 }
             }
         }
@@ -567,7 +569,7 @@ class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknownHtmlT
         val superState = super.onSaveInstanceState()
         val savedState = SavedState(superState)
         val bundle = Bundle()
-        writeTempInstance(HISTORY_LIST_KEY,  ArrayList<String>(history.historyList))
+        writeTempInstance(HISTORY_LIST_KEY, ArrayList<String>(history.historyList))
         bundle.putInt(HISTORY_CURSOR_KEY, history.historyCursor)
         writeTempInstance(INPUT_LAST_KEY, history.inputLast)
         bundle.putInt(VISIBILITY_KEY, visibility)
@@ -618,14 +620,16 @@ class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknownHtmlT
         }
     }
 
-    private fun <T> readAndPurgeTempInstance(filename: String, defaultValue: T?): T? {
-        var obj: T? = defaultValue
+    private fun <T> readAndPurgeTempInstance(filename: String, defaultValue: T): T {
+        var obj: T = defaultValue
 
         with(File(context.getCacheDir(), "$filename.inst")) {
             with(FileInputStream(this)) {
                 with(ObjectInputStream(this)) {
+                    val r: Any? = readObject()
+
                     @Suppress("UNCHECKED_CAST")
-                    obj = readObject() as T?
+                    obj = (r ?: defaultValue) as T
                     close()
                 }
             }
