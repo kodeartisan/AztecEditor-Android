@@ -46,7 +46,6 @@ import android.text.TextWatcher
 import android.text.style.SuggestionSpan
 import android.util.AttributeSet
 import android.util.DisplayMetrics
-import android.util.SparseArray
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -122,7 +121,6 @@ import java.util.LinkedList
 @Suppress("UNUSED_PARAMETER")
 open class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknownHtmlTappedListener, IEventInjector {
     companion object {
-        val CHANGE_TEST_KEY = "CHANGE_TEST_KEY"
         val BLOCK_EDITOR_HTML_KEY = "RETAINED_BLOCK_HTML_KEY"
         val BLOCK_EDITOR_START_INDEX_KEY = "BLOCK_EDITOR_START_INDEX_KEY"
         val BLOCK_DIALOG_VISIBLE_KEY = "BLOCK_DIALOG_VISIBLE_KEY"
@@ -526,30 +524,12 @@ open class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknown
         super.onRestoreInstanceState(savedState.superState)
         val customState = savedState.state
         val list = LinkedList<String>()
-
-        if (bigPersist) {
-            readAndPurgeTempInstance<ArrayList<String>>(HISTORY_LIST_KEY, null)?.let { list += it }
-        } else {
-            list += ArrayList(customState.getStringArrayList(HISTORY_LIST_KEY))
-        }
-
+        readAndPurgeTempInstance<ArrayList<String>>(HISTORY_LIST_KEY, null)?.let { list += it }
         history.historyList = list
         history.historyCursor = customState.getInt(HISTORY_CURSOR_KEY)
-
-        if (bigPersist) {
-            readAndPurgeTempInstance<String>(INPUT_LAST_KEY, "")?.let { history.inputLast = it }
-        } else {
-            history.inputLast = customState.getString(INPUT_LAST_KEY)
-        }
-
+        readAndPurgeTempInstance<String>(INPUT_LAST_KEY, "")?.let { history.inputLast = it }
         visibility = customState.getInt(VISIBILITY_KEY)
-
-        if (bigPersist) {
-            readAndPurgeTempInstance<String>(RETAINED_HTML_KEY, "")?.let { fromHtml(it) }
-        } else {
-            fromHtml(customState.getString(RETAINED_HTML_KEY))
-        }
-
+        readAndPurgeTempInstance<String>(RETAINED_HTML_KEY, "")?.let { fromHtml(it) }
         val retainedSelectionStart = customState.getInt(SELECTION_START_KEY)
         val retainedSelectionEnd = customState.getInt(SELECTION_END_KEY)
 
@@ -571,12 +551,8 @@ open class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknown
             if (retainedBlockHtmlIndex != -1) {
                 val unknownSpan = text.getSpans(retainedBlockHtmlIndex, retainedBlockHtmlIndex + 1, UnknownHtmlSpan::class.java).firstOrNull()
                 if (unknownSpan != null) {
-                    if (bigPersist) {
-                        readAndPurgeTempInstance<String>(BLOCK_EDITOR_HTML_KEY, "")?.let {
-                            showBlockEditorDialog(unknownSpan, it)
-                        }
-                    } else {
-                        showBlockEditorDialog(unknownSpan, customState.getString(BLOCK_EDITOR_HTML_KEY))
+                    readAndPurgeTempInstance<String>(BLOCK_EDITOR_HTML_KEY, "")?.let {
+                        showBlockEditorDialog(unknownSpan, it)
                     }
                 }
             }
@@ -584,14 +560,47 @@ open class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknown
 
         isMediaAdded = customState.getBoolean(IS_MEDIA_ADDED_KEY)
 
-        if (bigPersist) {
-            context.getSharedPreferences("instanceData", Context.MODE_PRIVATE).edit().clear().apply()
-        }
-
         enableTextChangedListener()
     }
 
-    var bigPersist = true
+    override fun onSaveInstanceState(): Parcelable {
+        val superState = super.onSaveInstanceState()
+        val savedState = SavedState(superState)
+        val bundle = Bundle()
+
+        writeTempInstance(HISTORY_LIST_KEY,  ArrayList<String>(history.historyList))
+
+        bundle.putInt(HISTORY_CURSOR_KEY, history.historyCursor)
+        writeTempInstance(INPUT_LAST_KEY, history.inputLast)
+        bundle.putInt(VISIBILITY_KEY, visibility)
+        writeTempInstance(RETAINED_HTML_KEY, toHtml(false))
+        bundle.putInt(SELECTION_START_KEY, selectionStart)
+        bundle.putInt(SELECTION_END_KEY, selectionEnd)
+
+        if (addLinkDialog != null && addLinkDialog!!.isShowing) {
+            bundle.putBoolean(LINK_DIALOG_VISIBLE_KEY, true)
+
+            val urlInput = addLinkDialog!!.findViewById<EditText>(R.id.linkURL)
+            val anchorInput = addLinkDialog!!.findViewById<EditText>(R.id.linkText)
+
+            bundle.putString(LINK_DIALOG_URL_KEY, urlInput?.text?.toString())
+            bundle.putString(LINK_DIALOG_ANCHOR_KEY, anchorInput?.text?.toString())
+        }
+
+        if (blockEditorDialog != null && blockEditorDialog!!.isShowing) {
+            val source = blockEditorDialog!!.findViewById<SourceViewEditText>(R.id.source)
+
+            bundle.putBoolean(BLOCK_DIALOG_VISIBLE_KEY, true)
+            bundle.putInt(BLOCK_EDITOR_START_INDEX_KEY, unknownBlockSpanStart)
+
+            writeTempInstance(BLOCK_EDITOR_HTML_KEY, source?.getPureHtml(false))
+        }
+
+        bundle.putBoolean(IS_MEDIA_ADDED_KEY, isMediaAdded)
+
+        savedState.state = bundle
+        return savedState
+    }
 
     private fun writeTempInstance(filename: String, obj: Any?) {
         with(File.createTempFile(filename, ".inst", context.getCacheDir())) {
@@ -627,57 +636,6 @@ open class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknown
         }
 
         return obj
-    }
-
-    override fun onSaveInstanceState(): Parcelable {
-        val superState = super.onSaveInstanceState()
-        val savedState = SavedState(superState)
-        val bundle = Bundle()
-
-        if (bigPersist) writeTempInstance(HISTORY_LIST_KEY,  ArrayList<String>(history.historyList))
-        else bundle.putStringArrayList(HISTORY_LIST_KEY, ArrayList<String>(history.historyList))
-
-        bundle.putInt(HISTORY_CURSOR_KEY, history.historyCursor)
-
-        if (bigPersist) writeTempInstance(INPUT_LAST_KEY, history.inputLast)
-        else bundle.putString(INPUT_LAST_KEY, history.inputLast)
-
-        bundle.putInt(VISIBILITY_KEY, visibility)
-
-        if (bigPersist) writeTempInstance(RETAINED_HTML_KEY, toHtml(false))
-        else bundle.putString(RETAINED_HTML_KEY, toHtml(false))
-
-        bundle.putInt(SELECTION_START_KEY, selectionStart)
-        bundle.putInt(SELECTION_END_KEY, selectionEnd)
-
-        if (addLinkDialog != null && addLinkDialog!!.isShowing) {
-            bundle.putBoolean(LINK_DIALOG_VISIBLE_KEY, true)
-
-            val urlInput = addLinkDialog!!.findViewById<EditText>(R.id.linkURL)
-            val anchorInput = addLinkDialog!!.findViewById<EditText>(R.id.linkText)
-
-            bundle.putString(LINK_DIALOG_URL_KEY, urlInput?.text?.toString())
-            bundle.putString(LINK_DIALOG_ANCHOR_KEY, anchorInput?.text?.toString())
-        }
-
-        if (blockEditorDialog != null && blockEditorDialog!!.isShowing) {
-            val source = blockEditorDialog!!.findViewById<SourceViewEditText>(R.id.source)
-
-            bundle.putBoolean(BLOCK_DIALOG_VISIBLE_KEY, true)
-            bundle.putInt(BLOCK_EDITOR_START_INDEX_KEY, unknownBlockSpanStart)
-
-            if (bigPersist) writeTempInstance(BLOCK_EDITOR_HTML_KEY, source?.getPureHtml(false))
-            else bundle.putString(BLOCK_EDITOR_HTML_KEY, source?.getPureHtml(false))
-        }
-
-        bundle.putBoolean(IS_MEDIA_ADDED_KEY, isMediaAdded)
-
-        savedState.state = bundle
-        return savedState
-    }
-
-    override fun dispatchSaveInstanceState(container: SparseArray<Parcelable>?) {
-        super.dispatchSaveInstanceState(container)
     }
 
     internal class SavedState : BaseSavedState {
