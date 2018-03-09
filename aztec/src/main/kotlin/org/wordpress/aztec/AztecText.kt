@@ -54,7 +54,6 @@ import android.view.inputmethod.BaseInputConnection
 import android.widget.EditText
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.ImageUtils
-import org.wordpress.android.util.ToastUtils
 import org.wordpress.aztec.formatting.BlockFormatter
 import org.wordpress.aztec.formatting.InlineFormatter
 import org.wordpress.aztec.formatting.LineBlockFormatter
@@ -119,7 +118,7 @@ import java.util.Arrays
 import java.util.LinkedList
 
 @Suppress("UNUSED_PARAMETER")
-open class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknownHtmlTappedListener, IEventInjector {
+class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknownHtmlTappedListener, IEventInjector {
     companion object {
         val BLOCK_EDITOR_HTML_KEY = "RETAINED_BLOCK_HTML_KEY"
         val BLOCK_EDITOR_START_INDEX_KEY = "BLOCK_EDITOR_START_INDEX_KEY"
@@ -277,8 +276,6 @@ open class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknown
     @SuppressLint("ResourceType")
     private fun init(attrs: AttributeSet?) {
         disableTextChangedListener()
-
-        ToastUtils.showToast(context, "Aztec init")
 
         val styles = context.obtainStyledAttributes(attrs, R.styleable.AztecText, 0, R.style.AztecTextStyle)
         setLineSpacing(
@@ -525,11 +522,14 @@ open class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknown
         val customState = savedState.state
         val list = LinkedList<String>()
         readAndPurgeTempInstance<ArrayList<String>>(HISTORY_LIST_KEY, null)?.let { list += it }
+
         history.historyList = list
         history.historyCursor = customState.getInt(HISTORY_CURSOR_KEY)
         readAndPurgeTempInstance<String>(INPUT_LAST_KEY, "")?.let { history.inputLast = it }
         visibility = customState.getInt(VISIBILITY_KEY)
+
         readAndPurgeTempInstance<String>(RETAINED_HTML_KEY, "")?.let { fromHtml(it) }
+
         val retainedSelectionStart = customState.getInt(SELECTION_START_KEY)
         val retainedSelectionEnd = customState.getInt(SELECTION_END_KEY)
 
@@ -567,9 +567,7 @@ open class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknown
         val superState = super.onSaveInstanceState()
         val savedState = SavedState(superState)
         val bundle = Bundle()
-
         writeTempInstance(HISTORY_LIST_KEY,  ArrayList<String>(history.historyList))
-
         bundle.putInt(HISTORY_CURSOR_KEY, history.historyCursor)
         writeTempInstance(INPUT_LAST_KEY, history.inputLast)
         bundle.putInt(VISIBILITY_KEY, visibility)
@@ -592,7 +590,6 @@ open class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknown
 
             bundle.putBoolean(BLOCK_DIALOG_VISIBLE_KEY, true)
             bundle.putInt(BLOCK_EDITOR_START_INDEX_KEY, unknownBlockSpanStart)
-
             writeTempInstance(BLOCK_EDITOR_HTML_KEY, source?.getPureHtml(false))
         }
 
