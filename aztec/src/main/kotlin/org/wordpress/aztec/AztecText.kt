@@ -1185,7 +1185,7 @@ open class AztecText : AppCompatEditText, TextWatcher, UnknownHtmlSpan.OnUnknown
         return consumeSelectionChangedEvent
     }
 
-    fun refreshText() {
+    open fun refreshText() {
         disableTextChangedListener()
         val selStart = selectionStart
         val selEnd = selectionEnd
