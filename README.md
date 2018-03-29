@@ -1,4 +1,4 @@
-<h1><img align="center" width=50px height=50px src="https://github.com/wordpress-mobile/AztecEditor-iOS/raw/develop/RepoAssets/aztec.png" alt="Aztec Logo'"/>&nbsp;Aztec: Native HTML Editor for Android</h1>
+<h1><img align="center" width=50px height=50px src="https://github.com/wordpress-mobile/AztecEditor-iOS/raw/develop/RepoAssets/aztec.png" alt="Aztec Logo"/>&nbsp;Aztec: Native HTML Editor for Android</h1>
 
 [![Build Status](https://travis-ci.org/wordpress-mobile/AztecEditor-Android.svg?branch=develop)](https://travis-ci.org/wordpress-mobile/AztecEditor-Android)
 [![BuddyBuild](https://dashboard.buddybuild.com/api/statusImage?appID=5800168c52aea90100a973ed&branch=develop&build=latest)](https://dashboard.buddybuild.com/apps/5800168c52aea90100a973ed/build/latest)
@@ -7,6 +7,8 @@ Aztec (which extends EditText) is a rich-text editor component for writing HTML
 documents in Android.
 
 Supports Android 4.1+ (API 16 - Jelly Bean)
+
+<img align="center" width=360px height=640px src="https://github.com/wordpress-mobile/AztecEditor-Android/raw/develop/visual_editor.png" alt="Visual Editor"/> <img align="center" width=360px height=640px src="https://github.com/wordpress-mobile/AztecEditor-Android/raw/develop/code_editor.png" alt="Visual Editor"/>
 
 ## Getting started
 
@@ -58,7 +60,7 @@ Aztec.with(visualEditor, sourceEditor, toolbar, context)
     .setVideoThumbnailGetter(GlideVideoThumbnailLoader(context))
 ```
 
-For more options, such as edit history, listeners and plugins please refer to the [demo app implementation](https://github.com/wordpress-mobile/AztecEditor-Android/blob/9fdc1958ca1e1ad5de6fba15dabe251bcf0fc7b6/app/src/main/kotlin/org/wordpress/aztec/demo/MainActivity.kt#L331-L346).
+For more options, such as edit history, listeners and plugins please refer to the [demo app implementation](https://github.com/wordpress-mobile/AztecEditor-Android/blob/develop/app/src/main/kotlin/org/wordpress/aztec/demo/MainActivity.kt).
 
 ## Build and test
 
@@ -96,17 +98,26 @@ $ ./gradlew cAT
 
 ## Integrating Aztec in your project
 
-The library is not ready for prime time yet, so it's not published on Maven
-Central. Currently the library is distributed as an [alpha build](https://github.com/wordpress-mobile/AztecEditor-Android/releases).
-
-Brave developers can either use the project as a source distribution
-or have fun with JitPack at their own risk:
-
+You can import Aztec into your project using Jitpack:
 ```gradle
-compile ('com.github.wordpress-mobile.WordPress-Aztec-Android:aztec:develop-SNAPSHOT')
+repositories {
+    maven { url "https://jitpack.io" }
+}
+```
+```gradle
+dependencies {
+    api ('com.github.wordpress-mobile.WordPress-Aztec-Android:aztec:v1.3.1')
+}
 ```
 
-When Aztec is ready, we'll publish the artifact in Maven.
+Brave developers can either use the project as a source distribution
+or have fun with the latest snapshot at their own risk:
+
+```gradle
+dependencies {
+    api ('com.github.wordpress-mobile.WordPress-Aztec-Android:aztec:develop-SNAPSHOT')
+}
+```
 
 ## Code formatting
 
